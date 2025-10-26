@@ -1,0 +1,235 @@
+:root {
+  --primary: #2c5aa0;
+  --primary-dark: #1e3d72;
+  --primary-light: #e8eff9;
+  --success: #28a745;
+  --success-light: #d4edda;
+  --danger: #dc3545;
+  --danger-light: #f8d7da;
+  --text: #333;
+  --text-light: #6c757d;
+  --border: #dee2e6;
+  --shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  --radius: 12px;
+  --transition: all 0.3s ease;
+}
+
+.voter-check-container {
+  max-width: 580px;
+  margin: 3rem auto;
+  padding: 3rem;
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.voter-check-container h2 {
+  color: var(--primary);
+  text-align: center;
+  margin-bottom: 2.5rem;
+  font-weight: 700;
+  font-size: 2.2rem;
+  position: relative;
+  padding-bottom: 1.5rem;
+}
+
+.voter-check-container h2::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 50%;
+  transform: translateX(50%);
+  width: 100px;
+  height: 4px;
+  background: var(--primary);
+  border-radius: 3px;
+}
+
+.form-group {
+  margin-bottom: 2rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: var(--text);
+  font-size: 1.1rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 1.2rem 1.5rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 1.2rem;
+  transition: var(--transition);
+  background-color: #f8f9fa;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background-color: white;
+  box-shadow: 0 0 0 4px rgba(44, 90, 160, 0.15);
+  transform: translateY(-2px);
+}
+
+.form-group input::placeholder {
+  color: #adb5bd;
+  font-size: 1.1rem;
+}
+
+.form-group small {
+  display: block;
+  margin-top: 0.75rem;
+  color: var(--danger);
+  font-size: 1rem;
+  font-weight: 500;
+  opacity: 0;
+  transform: translateY(-5px);
+  transition: var(--transition);
+}
+
+.form-group small:not(:empty) {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 1.3rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 1.3rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+  margin-top: 1rem;
+  letter-spacing: 0.5px;
+}
+
+button[type="submit"]:hover:not(:disabled) {
+  background: var(--primary-dark);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(44, 90, 160, 0.3);
+}
+
+button[type="submit"]:active {
+  transform: translateY(-1px);
+}
+
+button[type="submit"]:disabled {
+  background: #adb5bd;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.success {
+  padding: 1.2rem 1.5rem;
+  background: var(--success-light);
+  color: var(--success);
+  border: 2px solid rgba(40, 167, 69, 0.3);
+  border-radius: var(--radius);
+  margin-top: 2rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-align: center;
+  animation: fadeIn 0.4s ease;
+  line-height: 1.5;
+}
+
+.error {
+  padding: 1.2rem 1.5rem;
+  background: var(--danger-light);
+  color: var(--danger);
+  border: 2px solid rgba(220, 53, 69, 0.3);
+  border-radius: var(--radius);
+  margin-top: 2rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  text-align: center;
+  animation: fadeIn 0.4s ease;
+  line-height: 1.5;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* تأثيرات تحميل */
+button[type="submit"]:disabled {
+  position: relative;
+}
+
+button[type="submit"]:disabled::after {
+  content: ' جاري التحقق...';
+  animation: loading 2s infinite;
+}
+
+@keyframes loading {
+  0%, 33% { content: ' جاري التحقق.'; }
+  34%, 66% { content: ' جاري التحقق..'; }
+  67%, 100% { content: ' جاري التحقق...'; }
+}
+
+/* تحسينات للشاشات الصغيرة */
+@media (max-width: 768px) {
+  .voter-check-container {
+    margin: 2rem 1.5rem;
+    padding: 2.5rem 2rem;
+  }
+  
+  .voter-check-container h2 {
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+  }
+  
+  .form-group input {
+    padding: 1rem 1.2rem;
+    font-size: 1.1rem;
+  }
+  
+  button[type="submit"] {
+    padding: 1.1rem;
+    font-size: 1.2rem;
+  }
+  
+  .success,
+  .error {
+    padding: 1rem 1.2rem;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .voter-check-container {
+    margin: 1.5rem 1rem;
+    padding: 2rem 1.5rem;
+  }
+  
+  .voter-check-container h2 {
+    font-size: 1.6rem;
+  }
+  
+  .form-group input {
+    padding: 0.9rem 1rem;
+    font-size: 1rem;
+  }
+  
+  button[type="submit"] {
+    padding: 1rem;
+    font-size: 1.1rem;
+  }
+}

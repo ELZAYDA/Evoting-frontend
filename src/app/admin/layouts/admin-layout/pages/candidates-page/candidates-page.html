@@ -1,0 +1,167 @@
+<!-- candidates-page.component.html -->
+<div class="candidates-page">
+  <!-- رأس الصفحة -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>المرشحين</h1>
+      <button class="btn btn-primary" (click)="createCandidate()">
+        + مرشح جديد
+      </button>
+    </div>
+  </div>
+
+  <!-- إحصائيات -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-content">
+        <h3>{{ getTotalCandidates() }}</h3>
+        <p>إجمالي المرشحين</p>
+      </div>
+      <div class="stat-icon">👥</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-content">
+        <h3>{{ getTotalVotes() }}</h3>
+        <p>إجمالي الأصوات</p>
+      </div>
+      <div class="stat-icon">🗳️</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-content">
+        <h3>{{ getLeadingCandidate()?.votesCount || 0 }}</h3>
+        <p>أعلى تصويت</p>
+        <small *ngIf="getLeadingCandidate()">{{ getLeadingCandidate()?.fullName }}</small>
+      </div>
+      <div class="stat-icon">👑</div>
+    </div>
+  </div>
+
+  <!-- البحث والتصفية -->
+  <div class="filters-section">
+    <div class="search-container">
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (input)="onSearchChange()"
+        placeholder="ابحث عن المرشحين..."
+        class="search-input">
+    </div>
+    <select 
+      [(ngModel)]="electionFilter" 
+      (change)="onElectionFilterChange()"
+      class="filter-select">
+      <option value="">جميع الانتخابات</option>
+      <option *ngFor="let election of elections" [value]="election.id">
+        {{ election.title }}
+      </option>
+    </select>
+  </div>
+
+  <!-- رسالة الخطأ -->
+  @if (errorMessage) {
+    <div class="error-message">
+      <p>{{ errorMessage }}</p>
+      <button class="btn btn-retry" (click)="retryLoading()">إعادة المحاولة</button>
+    </div>
+  }
+
+  <!-- جدول المرشحين -->
+  <div class="table-section">
+    @if (isLoading) {
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>جاري التحميل...</p>
+      </div>
+    } @else if (filteredCandidates.length === 0 && !errorMessage) {
+      <div class="empty-state">
+        <div class="empty-icon">👥</div>
+        <h3>لا توجد مرشحين</h3>
+        <p>لم نعثر على أي مرشحين تطابق بحثك</p>
+        <button class="btn btn-primary" (click)="createCandidate()">
+          إضافة مرشح جديد
+        </button>
+      </div>
+    } @else {
+      <div class="table-container">
+        <table class="candidates-table">
+          <thead>
+            <tr>
+              <th>الصورة</th>
+              <th>المرشح</th>
+              <th>الحزب</th>
+              <th>الانتخاب</th>
+              <th>الأصوات</th>
+              <th>النسبة</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (candidate of filteredCandidates; track candidate.candidateId) {
+              <tr>
+                <td>
+                  <div class="candidate-photo">
+                    <img 
+                      [src]="candidate.photoUrl || 'assets/images/default-avatar.png'" 
+                      [alt]="candidate.fullName" 
+                      class="photo"
+                      (error)="candidate.photoUrl = 'assets/images/default-avatar.png'">
+                  </div>
+                </td>
+                <td>
+                  <div class="candidate-info">
+                    <strong>{{ candidate.fullName }}</strong>
+                    @if (candidate.biography) {
+                      <p>{{ candidate.biography }}</p>
+                    }
+                  </div>
+                </td>
+                <td>
+                  <span class="party-badge">{{ candidate.party || 'مستقل' }}</span>
+                </td>
+                <td>
+                  <span class="election-name">{{ candidate.electionTitle }}</span>
+                </td>
+                <td>
+                  <span class="count">{{ candidate.votesCount || 0 }}</span>
+                </td>
+                <td>
+                  <div class="percentage-bar">
+                    <div class="bar-container">
+                      <div 
+                        class="bar-fill" 
+                        [style.width.%]="getVotesPercentage(candidate)">
+                      </div>
+                    </div>
+                    <span class="percentage-text">{{ getVotesPercentage(candidate) | number:'1.1-1' }}%</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="actions">
+                    <button 
+                      class="btn-icon view" 
+                      (click)="viewCandidate(candidate)"
+                      title="عرض">
+                      👁️
+                    </button>
+                    <button 
+                      class="btn-icon edit" 
+                      (click)="editCandidate(candidate)"
+                      title="تعديل">
+                      ✏️
+                    </button>
+                    <button 
+                      class="btn-icon delete" 
+                      (click)="deleteCandidate(candidate)"
+                      title="حذف">
+                      🗑️
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

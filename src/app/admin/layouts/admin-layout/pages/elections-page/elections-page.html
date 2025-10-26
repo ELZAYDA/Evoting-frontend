@@ -1,0 +1,136 @@
+<div class="elections-page">
+  <!-- رأس الصفحة -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>الانتخابات</h1>
+      <button class="btn btn-primary" (click)="createElection()">
+        + انتخاب جديد
+      </button>
+    </div>
+  </div>
+
+  <!-- إحصائيات -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-content">
+        <h3>{{ getTotalElections() }}</h3>
+        <p>إجمالي الانتخابات</p>
+      </div>
+      <div class="stat-icon">📊</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-content">
+        <h3>{{ getActiveElections() }}</h3>
+        <p>نشطة</p>
+      </div>
+      <div class="stat-icon">✅</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-content">
+        <h3>{{ getInactiveElections() }}</h3>
+        <p>غير نشطة</p>
+      </div>
+      <div class="stat-icon">⏸️</div>
+    </div>
+  </div>
+
+  <!-- البحث والتصفية -->
+  <div class="filters-section">
+    <div class="search-container">
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (input)="onSearchChange()"
+        placeholder="ابحث عن الانتخابات..."
+        class="search-input">
+    </div>
+    <select 
+      [(ngModel)]="statusFilter" 
+      (change)="onStatusFilterChange()"
+      class="filter-select">
+      <option value="">جميع الحالات</option>
+      <option value="active">نشطة</option>
+      <option value="inactive">غير نشطة</option>
+    </select>
+  </div>
+
+  <!-- جدول الانتخابات -->
+  <div class="table-section">
+    @if (isLoading) {
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>جاري التحميل...</p>
+      </div>
+    } @else if (filteredElections.length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <h3>لا توجد انتخابات</h3>
+        <p>لم نعثر على أي انتخابات تطابق بحثك</p>
+        <button class="btn btn-primary" (click)="createElection()">
+          بدء انتخاب جديد
+        </button>
+      </div>
+    } @else {
+      <div class="table-container">
+        <table class="elections-table">
+          <thead>
+            <tr>
+              <th>اسم الانتخاب</th>
+              <th>تاريخ البدء</th>
+              <th>تاريخ الانتهاء</th>
+              <th>الحالة</th>
+              <th>المرشحين</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (election of filteredElections; track election.electionId) {
+              <tr>
+                <td>
+                  <div class="election-info">
+                    <strong>{{ election.electionName }}</strong>
+                    @if (election.description) {
+                      <p>{{ election.description }}</p>
+                    }
+                  </div>
+                </td>
+                <td>{{ formatDate(election.startDate) }}</td>
+                <td>{{ formatDate(election.endDate) }}</td>
+                <td>
+                  <span [class]="getStatusClass(election.status)">
+                    {{ getStatusText(election.status) }}
+                  </span>
+                </td>
+                <td>
+                  <span class="count">{{ election.candidatesCount }}</span>
+                </td>
+                <td>
+                  <div class="actions">
+                    <button 
+                      class="btn-icon view" 
+                      (click)="viewElection(election)"
+                      title="عرض">
+                      👁️
+                    </button>
+                    <button 
+                      class="btn-icon edit" 
+                      (click)="editElection(election)"
+                      title="تعديل">
+                      ✏️
+                    </button>
+                    <button 
+                      class="btn-icon delete" 
+                      (click)="deleteElection(election)"
+                      title="حذف">
+                      🗑️
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</div>

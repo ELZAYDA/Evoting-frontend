@@ -1,0 +1,229 @@
+<!-- users-page.component.html -->
+<div class="users-page">
+  <!-- رأس الصفحة -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>إدارة المستخدمين</h1>
+      <p class="page-description">إدارة وعرض جميع المستخدمين في النظام</p>
+    </div>
+  </div>
+
+  <!-- إحصائيات -->
+  <div class="stats-grid" *ngIf="stats && !isLoadingStats">
+    <div class="stat-card">
+      <div class="stat-content">
+        <h3>{{ stats.totalUsers }}</h3>
+        <p>إجمالي المستخدمين</p>
+      </div>
+      <div class="stat-icon">👥</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-content">
+        <h3>{{ stats.totalAdmins }}</h3>
+        <p>المدراء</p>
+      </div>
+      <div class="stat-icon">👑</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-content">
+        <h3>{{ stats.activeUsersToday }}</h3>
+        <p>نشطون اليوم</p>
+      </div>
+      <div class="stat-icon">🟢</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-content">
+        <h3>{{ stats.newUsersThisWeek }}</h3>
+        <p>جدد هذا الأسبوع</p>
+      </div>
+      <div class="stat-icon">🆕</div>
+    </div>
+  </div>
+
+  <!-- أدوات البحث والتصفية -->
+  <div class="tools-section">
+    <div class="search-filters">
+      <div class="search-box">
+        <input 
+          type="text" 
+          [(ngModel)]="searchTerm" 
+          (keyup.enter)="onSearch()"
+          placeholder="ابحث بالاسم، البريد، أو اسم المستخدم..."
+          class="search-input">
+        <button (click)="onSearch()" class="btn btn-primary">بحث</button>
+      </div>
+      
+      <div class="filters">
+        <select 
+          [(ngModel)]="roleFilter" 
+          (change)="onFilterChange()"
+          class="filter-select">
+          <option *ngFor="let role of roles" [value]="role.value">
+            {{ role.label }}
+          </option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="results-info">
+      <span class="results-count">
+        عرض {{ users.length }} من {{ totalCount }} مستخدم
+      </span>
+    </div>
+  </div>
+
+  <!-- رسالة الخطأ -->
+  <div *ngIf="errorMessage" class="error-message">
+    <p>{{ errorMessage }}</p>
+  </div>
+
+  <!-- جدول المستخدمين -->
+  <div class="table-section">
+    @if (isLoading) {
+      <div class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>جاري تحميل البيانات...</p>
+      </div>
+    } @else {
+      <div class="table-container">
+        @if (users.length === 0) {
+          <div class="empty-state">
+            <div class="empty-icon">👥</div>
+            <h3>لا توجد مستخدمين</h3>
+            <p>لم يتم العثور على أي مستخدمين تطابق معايير البحث.</p>
+          </div>
+        } @else {
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>المستخدم</th>
+                <th>الدور</th>
+                <th>الحالة</th>
+                <th>تاريخ الإنشاء</th>
+                <th>آخر دخول</th>
+                <th>الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (user of users; track user.id) {
+                <tr>
+                  <td>
+                    <div class="user-info">
+                      <strong class="user-name">{{ user.fullName }}</strong>
+                      <div class="user-details">
+                        <span class="user-email">{{ user.email }}</span>
+                        <span class="user-username">@{{ user.userName }}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="user-roles">
+                      <span 
+                        *ngFor="let role of user.roles" 
+                        [class]="getRoleBadgeClass(role)"
+                        class="role-badge">
+                        {{ role === 'Admin' ? 'مدير' : 'مستخدم' }}
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    <span [class]="getStatusClass(user.emailConfirmed)" class="status-badge">
+                      {{ getStatusText(user.emailConfirmed) }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="date">{{ formatDate(user.createdAt) }}</span>
+                  </td>
+                  <td>
+                    <span class="date">{{ formatDateTime(user.lastLogin) }}</span>
+                  </td>
+                  <td>
+                    <div class="action-buttons">
+                      <!-- تغيير الدور -->
+                      <div class="dropdown" *ngIf="user.roles[0] !== 'Admin'">
+                        <button class="btn-icon btn-role" title="تغيير الدور">
+                          🔄
+                        </button>
+                        <div class="dropdown-content">
+                          <button (click)="changeUserRole(user, 'Admin')" class="dropdown-item">
+                            ترقية إلى مدير
+                          </button>
+                        </div>
+                      </div>
+
+                      <div class="dropdown" *ngIf="user.roles[0] === 'Admin'">
+                        <button class="btn-icon btn-role" title="تغيير الدور">
+                          🔄
+                        </button>
+                        <div class="dropdown-content">
+                          <button (click)="changeUserRole(user, 'User')" class="dropdown-item">
+                            خفض إلى مستخدم
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- تفعيل/تعطيل -->
+                      <button 
+                        class="btn-icon" 
+                        [class.btn-activate]="!user.emailConfirmed"
+                        [class.btn-deactivate]="user.emailConfirmed"
+                        (click)="toggleUserActive(user)"
+                        [title]="user.emailConfirmed ? 'تعطيل' : 'تفعيل'">
+                        {{ user.emailConfirmed ? '⏸️' : '▶️' }}
+                      </button>
+
+                      <!-- إعادة تعيين كلمة المرور -->
+                      <button 
+                        class="btn-icon btn-reset-password" 
+                        (click)="resetUserPassword(user)"
+                        title="إعادة تعيين كلمة المرور">
+                        🔑
+                      </button>
+
+                      <!-- حذف -->
+                      <button 
+                        class="btn-icon btn-delete" 
+                        (click)="deleteUser(user)"
+                        title="حذف">
+                        🗑️
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- الترقيم -->
+  @if (!isLoading && users.length > 0) {
+    <div class="pagination">
+      <button 
+        class="page-btn prev" 
+        (click)="onPageChange(currentPage - 1)"
+        [disabled]="currentPage === 1">
+        السابق
+      </button>
+      
+      <div class="page-numbers">
+        <span 
+          *ngFor="let page of [].constructor(totalPages); let i = index" 
+          class="page-number"
+          [class.active]="currentPage === i + 1"
+          (click)="onPageChange(i + 1)">
+          {{ i + 1 }}
+        </span>
+      </div>
+      
+      <button 
+        class="page-btn next" 
+        (click)="onPageChange(currentPage + 1)"
+        [disabled]="currentPage === totalPages">
+        التالي
+      </button>
+    </div>
+  }
+</div>

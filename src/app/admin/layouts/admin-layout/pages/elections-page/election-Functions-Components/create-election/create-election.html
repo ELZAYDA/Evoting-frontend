@@ -1,0 +1,109 @@
+<!-- create-election.component.html -->
+<div class="create-election-page">
+  <!-- رأس الصفحة -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <a routerLink="/admin/elections" class="back-link">← رجوع</a>
+        <h1>إنشاء انتخاب جديد</h1>
+        <p class="page-description">املأ البيانات الأساسية للانتخاب الجديد</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- نموذج الإنشاء -->
+  <div class="form-section">
+    <form (ngSubmit)="onSubmit()" class="election-form">
+      
+      <!-- رسالة الخطأ -->
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <!-- اسم الانتخاب -->
+      <div class="form-group">
+        <label for="electionName">اسم الانتخاب *</label>
+        <input
+          type="text"
+          id="electionName"
+          [(ngModel)]="election.electionName"
+          name="electionName"
+          placeholder="أدخل اسم الانتخاب..."
+          class="form-input"
+          required>
+      </div>
+
+      <!-- وصف الانتخاب -->
+      <div class="form-group">
+        <label for="description">وصف الانتخاب</label>
+        <textarea
+          id="description"
+          [(ngModel)]="election.description"
+          name="description"
+          placeholder="أدخل وصفاً للانتخاب..."
+          rows="4"
+          class="form-textarea">
+        </textarea>
+      </div>
+
+      <!-- تواريخ الانتخاب -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="startDate">تاريخ البدء *</label>
+          <input
+            type="date"
+            id="startDate"
+            [(ngModel)]="election.startDate"
+            name="startDate"
+            [min]="minDate"
+            class="form-input"
+            required>
+        </div>
+
+        <div class="form-group">
+          <label for="endDate">تاريخ الانتهاء *</label>
+          <input
+            type="date"
+            id="endDate"
+            [(ngModel)]="election.endDate"
+            name="endDate"
+            [min]="minDate"
+            class="form-input"
+            required>
+        </div>
+      </div>
+
+      <!-- حالة الانتخاب -->
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            [(ngModel)]="election.status"
+            name="status"
+            class="checkbox-input">
+          <span class="checkmark"></span>
+          تفعيل الانتخاب فوراً
+        </label>
+        <p class="checkbox-help">سيصبح الانتخاب نشطاً ومتاحاً للمستخدمين</p>
+      </div>
+
+      <!-- أزرار الإجراءات -->
+      <div class="form-actions">
+        <button
+          type="button"
+          (click)="onCancel()"
+          class="btn btn-secondary"
+          [disabled]="isLoading">
+          إلغاء
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="isLoading">
+          <span *ngIf="isLoading" class="loading-spinner"></span>
+          {{ isLoading ? 'جاري الإنشاء...' : 'إنشاء الانتخاب' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

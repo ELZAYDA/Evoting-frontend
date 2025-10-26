@@ -1,0 +1,167 @@
+<!-- create-candidate.component.html -->
+<div class="create-candidate-page">
+  <!-- رأس الصفحة -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <a routerLink="/admin/candidates" class="back-link">← رجوع للقائمة</a>
+        <h1>إضافة مرشح جديد</h1>
+        <p class="page-description">املأ بيانات المرشح الجديد</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- نموذج الإنشاء -->
+  <div class="form-section">
+    <form (ngSubmit)="onSubmit()" class="candidate-form">
+      
+      <!-- رسائل التنبيه -->
+      <div *ngIf="errorMessage" class="alert-message error">
+        {{ errorMessage }}
+      </div>
+
+      <div *ngIf="successMessage" class="alert-message success">
+        {{ successMessage }}
+        <span class="redirect-message">سيتم redirect للقائمة خلال ثانيتين...</span>
+      </div>
+
+      <!-- محتوى النموذج -->
+      <div class="form-content">
+        
+        <!-- المعلومات الشخصية -->
+        <div class="form-section-card">
+          <h3>المعلومات الشخصية</h3>
+          
+          <div class="form-group">
+            <label for="fullName">اسم المرشح الكامل *</label>
+            <input
+              type="text"
+              id="fullName"
+              [(ngModel)]="candidate.fullName"
+              name="fullName"
+              placeholder="أدخل اسم المرشح الكامل..."
+              class="form-input"
+              required
+              minlength="2">
+            <div class="form-hint">يجب أن يكون الاسم على الأقل حرفين</div>
+          </div>
+
+          <div class="form-group">
+            <label for="party">الحزب / القائمة</label>
+            <input
+              type="text"
+              id="party"
+              [(ngModel)]="candidate.party"
+              name="party"
+              placeholder="أدخل اسم الحزب أو القائمة..."
+              class="form-input">
+            <div class="form-hint">اتركه فارغاً إذا كان مرشحاً مستقلاً</div>
+          </div>
+        </div>
+
+        <!-- الصورة الشخصية -->
+        <div class="form-section-card">
+          <h3>الصورة الشخصية</h3>
+          
+          <div class="photo-section">
+            <div class="form-group">
+              <label for="photoUrl">رابط الصورة</label>
+              <input
+                type="url"
+                id="photoUrl"
+                [(ngModel)]="candidate.photoUrl"
+                (input)="onPhotoUrlChange()"
+                name="photoUrl"
+                placeholder="https://example.com/photo.jpg"
+                class="form-input">
+              <div class="form-hint">أدخل رابط صورة المرشح أو اتركه فارغاً للصورة الافتراضية</div>
+            </div>
+
+            <div class="photo-preview" *ngIf="candidate.photoUrl">
+              <img 
+                [src]="candidate.photoUrl" 
+                alt="معاينة الصورة" 
+                class="preview-image"
+                (error)="candidate.photoUrl = ''">
+              <button type="button" (click)="candidate.photoUrl = ''" class="btn-remove">إزالة الصورة</button>
+            </div>
+
+            <div class="default-photo-option">
+              <button type="button" (click)="useDefaultPhoto()" class="btn-outline">
+                استخدام الصورة الافتراضية
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- الانتخاب والوصف -->
+        <div class="form-section-card">
+          <h3>الانتخاب والوصف</h3>
+          
+          <div class="form-group">
+            <label for="electionId">الانتخاب *</label>
+            <select
+              id="electionId"
+              [(ngModel)]="candidate.electionId"
+              (change)="onElectionChange()"
+              name="electionId"
+              class="form-select"
+              [disabled]="isElectionsLoading"
+              required>
+              <option value="">اختر الانتخاب...</option>
+              <option 
+                *ngFor="let election of elections" 
+                [value]="election.electionId">
+                {{ election.electionName || election.name }}
+              </option>
+            </select>
+            <div *ngIf="isElectionsLoading" class="loading-text">جاري تحميل الانتخابات...</div>
+            <div *ngIf="!isElectionsLoading && elections.length === 0" class="error-text">
+              لا توجد انتخابات متاحة. يجب إنشاء انتخاب أولاً.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="biography">السيرة الذاتية / البرنامج الانتخابي</label>
+            <textarea
+              id="biography"
+              [(ngModel)]="candidate.biography"
+              name="biography"
+              placeholder="أدخل وصفاً عن المرشح، البرنامج الانتخابي، الخبرات..."
+              rows="6"
+              class="form-textarea"
+              minlength="10"
+              maxlength="1000">
+            </textarea>
+            <div class="form-hint">
+              {{ candidate.biography?.length || 0 }}/1000 حرف
+              <span *ngIf="candidate.biography && candidate.biography.length < 10" class="error-text">
+                - يجب أن يكون الوصف على الأقل 10 أحرف
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- أزرار الإجراءات -->
+        <div class="form-actions">
+          <button
+            type="button"
+            (click)="onCancel()"
+            class="btn btn-secondary"
+            [disabled]="isLoading">
+            إلغاء
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="isLoading || !candidate.electionId || !candidate.fullName?.trim()">
+            <span *ngIf="isLoading" class="loading-spinner"></span>
+            {{ isLoading ? 'جاري الإنشاء...' : 'إنشاء المرشح' }}
+          </button>
+        </div>
+
+      </div>
+
+    </form>
+  </div>
+</div>

@@ -1,0 +1,419 @@
+/* settings-page.css */
+.settings-page {
+  padding: 20px;
+  background: #0f0f0f;
+  min-height: 100vh;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* رأس الصفحة */
+.page-header {
+  margin-bottom: 40px;
+}
+
+.header-content {
+  border-bottom: 1px solid #333;
+  padding-bottom: 20px;
+}
+
+.header-content h1 {
+  color: #fff;
+  margin: 0 0 8px 0;
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.header-content p {
+  color: #999;
+  margin: 0;
+  font-size: 16px;
+}
+
+/* محتوى الإعدادات */
+.settings-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* قسم الإعدادات */
+.settings-section {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 30px;
+  transition: all 0.3s ease;
+}
+
+.settings-section:hover {
+  border-color: #3b82f6;
+  transform: translateY(-2px);
+}
+
+.section-header {
+  margin-bottom: 25px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 15px;
+}
+
+.section-header h2 {
+  color: #fff;
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.section-header p {
+  color: #999;
+  margin: 0;
+  font-size: 14px;
+}
+
+/* النماذج */
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  color: #fff;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.form-input {
+  padding: 12px 16px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: #262626;
+  color: #e0e0e0;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  background: #2a2a2a;
+}
+
+.form-input.disabled {
+  background: #333;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.form-input.error {
+  border-color: #dc2626;
+}
+
+.form-input.loading {
+  background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 20a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16z' fill='%23333'/%3E%3Cpath d='M10 2a8 8 0 0 1 8 8h2a10 10 0 0 0-10-10v2z' fill='%233b82f6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+}
+
+.hint {
+  color: #666;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* الصلاحيات */
+.roles-container {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.role-badge {
+  background: #3b82f6;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* رسائل التحقق */
+.validation-message {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.validation-message .valid {
+  color: #10b981;
+}
+
+.validation-message .invalid {
+  color: #dc2626;
+}
+
+/* أزرار */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: #333;
+  color: #e0e0e0;
+  border: 1px solid #444;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #444;
+  transform: translateY(-1px);
+}
+
+/* مؤشر التحميل */
+.loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* رسائل النتيجة */
+.result-message {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.result-message.success {
+  background: #10b98120;
+  border: 1px solid #10b981;
+  color: #10b981;
+}
+
+.result-message.error {
+  background: #dc262620;
+  border: 1px solid #dc2626;
+  color: #fca5a5;
+}
+
+/* التجاوب مع الشاشات الصغيرة */
+@media (max-width: 1024px) {
+  .settings-content {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .settings-page {
+    padding: 15px;
+  }
+  
+  .header-content h1 {
+    font-size: 28px;
+  }
+  
+  .settings-section {
+    padding: 20px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .btn {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-content h1 {
+    font-size: 24px;
+  }
+  
+  .section-header h2 {
+    font-size: 20px;
+  }
+  
+  .roles-container {
+    justify-content: center;
+  }
+}
+/* نضيف الـ CSS الجديد لإدارة الصلاحيات */
+
+/* البحث عن المستخدم */
+.user-search {
+  margin-bottom: 20px;
+}
+
+.search-input-container {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.search-input-container .form-input {
+  flex: 1;
+}
+
+/* نتائج البحث */
+.user-results {
+  background: #262626;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.user-info h4 {
+  color: #fff;
+  margin: 0 0 15px 0;
+  font-size: 18px;
+}
+
+.user-details {
+  margin-bottom: 20px;
+}
+
+.user-details p {
+  margin: 5px 0;
+  color: #e0e0e0;
+}
+
+.user-details strong {
+  color: #fff;
+}
+
+/* الصلاحيات الحالية */
+.current-roles {
+  margin-bottom: 25px;
+}
+
+.current-roles h5 {
+  color: #fff;
+  margin: 0 0 10px 0;
+  font-size: 16px;
+}
+
+.no-roles {
+  color: #999;
+  font-style: italic;
+  padding: 10px;
+  text-align: center;
+  background: #333;
+  border-radius: 6px;
+}
+
+/* أزرار إزالة الصلاحيات */
+.remove-role-btn {
+  background: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 12px;
+  cursor: pointer;
+  margin-right: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.remove-role-btn:hover {
+  background: #b91c1c;
+}
+
+/* إضافة صلاحية جديدة */
+.add-role h5 {
+  color: #fff;
+  margin: 0 0 10px 0;
+  font-size: 16px;
+}
+
+.add-role-form {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.add-role-form .form-input {
+  flex: 1;
+}
+
+/* تحسينات للـ role badges */
+.role-badge {
+  background: #3b82f6;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin: 2px;
+}
+
+/* تحسينات للتجاوب */
+@media (max-width: 768px) {
+  .search-input-container {
+    flex-direction: column;
+  }
+  
+  .add-role-form {
+    flex-direction: column;
+  }
+  
+  .user-results {
+    padding: 15px;
+  }
+}
+
+/* باقي الـ CSS يفضل زي ما هو */

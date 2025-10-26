@@ -1,0 +1,84 @@
+<div class="admin-container">
+  <!-- Navbar -->
+  <header class="admin-navbar">
+    <div class="navbar-content">
+      
+      <!-- الجانب الأيسر: زر القائمة واسم الصفحة -->
+      <div class="navbar-left">
+        <button class="sidebar-toggle" (click)="toggleSidebar()">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </button>
+        <h1 class="page-title">{{ currentPageTitle }}</h1>
+      </div>
+
+      <!-- الجانب الأيمن: معلومات المستخدم وأزرار -->
+      <div class="navbar-right">
+        <div class="user-info">
+          <span class="welcome-text">مرحباً، يا مدير</span>
+          <div class="user-avatar">
+            <i class="user-icon">👤</i>
+          </div>
+        </div>
+        <button class="logout-btn" (click)="logout()">
+          <span class="logout-icon">🚪</span>
+          تسجيل خروج
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <div class="admin-body">
+    <!-- Sidebar -->
+    <aside class="sidebar" [class.closed]="!isSidebarOpen">
+    
+
+      <nav class="sidebar-nav">
+        <ul class="nav-menu">
+
+          <li class="nav-item" [class.active]="currentPageTitle === 'إدارة الانتخابات'">
+            <a routerLink="/admin/elections" class="nav-link" (click)="isSidebarOpen = true">
+              <span class="nav-icon">🗳️</span>
+              <span class="nav-text">إدارة الانتخابات</span>
+            </a>
+          </li>
+          
+          <li class="nav-item" [class.active]="currentPageTitle === 'إدارة المرشحين'">
+            <a routerLink="/admin/candidates" class="nav-link" (click)="isSidebarOpen = true">
+              <span class="nav-icon">👥</span>
+              <span class="nav-text">إدارة المرشحين</span>
+            </a>
+          </li>
+          
+           <li class="nav-item" [class.active]="currentPageTitle === 'إدارة النتائج'">
+            <a routerLink="/admin/results" class="nav-link" (click)="isSidebarOpen = true">
+              <span class="nav-icon">🗳️</span>
+              <span class="nav-text">إدارة النتائج</span>
+            </a>
+          </li>
+
+          <li class="nav-item" [class.active]="currentPageTitle === 'إدارة المستخدمين'">
+            <a routerLink="/admin/users" class="nav-link" (click)="isSidebarOpen = true">
+              <span class="nav-icon">👤</span>
+              <span class="nav-text">إدارة المستخدمين</span>
+            </a>
+          </li>
+          
+          <li class="nav-item" [class.active]="currentPageTitle === 'الإعدادات'">
+            <a routerLink="/admin/settings" class="nav-link" (click)="isSidebarOpen = true">
+              <span class="nav-icon">⚙️</span>
+              <span class="nav-text">الإعدادات</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" [class.full-width]="!isSidebarOpen">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

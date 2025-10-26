@@ -1,0 +1,164 @@
+<!-- view-candidate.component.html -->
+<div class="view-candidate-page">
+  <!-- رأس الصفحة -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <button (click)="onBack()" class="back-btn">← رجوع للقائمة</button>
+        <h1>تفاصيل المرشح</h1>
+        <p class="page-description">عرض المعلومات الكاملة عن المرشح</p>
+      </div>
+      
+      <div class="header-actions" *ngIf="candidate">
+        <button (click)="onEdit()" class="btn btn-primary">
+          ✏️ تعديل المرشح
+        </button>
+        <button (click)="onDelete()" class="btn btn-danger">
+          🗑️ حذف المرشح
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- محتوى الصفحة -->
+  <div class="content-section">
+    <!-- حالة التحميل -->
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>جاري تحميل بيانات المرشح...</p>
+    </div>
+
+    <!-- رسالة الخطأ -->
+    <div *ngIf="errorMessage && !isLoading" class="error-state">
+      <div class="error-icon">⚠️</div>
+      <h3>فشل في تحميل البيانات</h3>
+      <p>{{ errorMessage }}</p>
+      <button (click)="retryLoading()" class="btn btn-primary">إعادة المحاولة</button>
+    </div>
+
+    <!-- بيانات المرشح -->
+    <div *ngIf="candidate && !isLoading" class="candidate-details">
+      
+      <!-- بطاقة المعلومات الأساسية -->
+      <div class="info-card">
+        <div class="card-header">
+          <div class="candidate-photo-section">
+            <img 
+              [src]="candidate.photoUrl || 'assets/images/default-avatar.png'" 
+              [alt]="candidate.fullName" 
+              class="candidate-photo"
+              (error)="candidate.photoUrl = 'assets/images/default-avatar.png'">
+          </div>
+          <div class="candidate-main-info">
+            <h2>{{ candidate.fullName }}</h2>
+            <div class="candidate-meta">
+              <span class="party-badge">{{ getPartyText() }}</span>
+              <span class="election-badge">{{ candidate.electionTitle }}</span>
+            </div>
+            <div class="candidate-id">معرف المرشح: #{{ candidate.candidateId }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- إحصائيات -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">🗳️</div>
+          <div class="stat-info">
+            <h3>{{ candidate.votesCount || 0 }}</h3>
+            <p>عدد الأصوات</p>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon">📊</div>
+          <div class="stat-info">
+            <h3>{{ getVotePercentage() | number:'1.1-1' }}%</h3>
+            <p>نسبة التصويت</p>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon">📅</div>
+          <div class="stat-info">
+            <h3>{{ formatDate(candidate.createdAt) }}</h3>
+            <p>تاريخ الإضافة</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- المعلومات التفصيلية -->
+      <div class="details-grid">
+        <div class="detail-section">
+          <h3>المعلومات الأساسية</h3>
+          <div class="detail-list">
+            <div class="detail-item">
+              <span class="detail-label">الاسم الكامل:</span>
+              <span class="detail-value">{{ candidate.fullName }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">الحزب:</span>
+              <span class="detail-value">{{ getPartyText() }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">الانتخاب:</span>
+              <span class="detail-value">{{ candidate.electionTitle }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">معرف الانتخاب:</span>
+              <span class="detail-value">{{ candidate.electionId }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-section">
+          <h3>معلومات النظام</h3>
+          <div class="detail-list">
+            <div class="detail-item">
+              <span class="detail-label">معرف المرشح:</span>
+              <span class="detail-value">#{{ candidate.candidateId }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">تاريخ الإضافة:</span>
+              <span class="detail-value">{{ formatDate(candidate.createdAt) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">الحالة:</span>
+              <span class="detail-value status-active">نشط</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- السيرة الذاتية -->
+      <div class="bio-section" *ngIf="candidate.biography">
+        <div class="section-header">
+          <h3>السيرة الذاتية والبرنامج الانتخابي</h3>
+        </div>
+        <div class="bio-content">
+          <p>{{ candidate.biography }}</p>
+        </div>
+      </div>
+
+      <!-- شريط التقدم -->
+      <div class="progress-section" *ngIf="candidate.votesCount > 0">
+        <div class="section-header">
+          <h3>مستوى التصويت</h3>
+        </div>
+        <div class="progress-container">
+          <div class="progress-bar">
+            <div 
+              class="progress-fill" 
+              [style.width.%]="getVotePercentage()">
+            </div>
+          </div>
+          <div class="progress-info">
+            <span class="progress-text">{{ candidate.votesCount }} صوت</span>
+            <span class="progress-percentage">{{ getVotePercentage() | number:'1.1-1' }}%</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

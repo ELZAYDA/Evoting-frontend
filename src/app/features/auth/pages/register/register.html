@@ -1,0 +1,213 @@
+<div class="register-wrapper">
+  <div class="register-container">
+    
+    <!-- Left Side - Platform Information -->
+    <div class="platform-section">
+      <div class="platform-content">
+        <div class="platform-header">
+          <h1>منصة الانتخابات الإلكترونية</h1>
+          <p>شارك في بناء مستقبل ديمقراطي أفضل</p>
+        </div>
+
+        <div class="platform-features">
+          <div class="platform-feature">
+            <div class="feature-icon">✓</div>
+            <div class="feature-content">
+              <span class="feature-title">آمان وموثوقية عالية</span>
+              <span class="feature-description">نظام محمي بأحدث تقنيات التشفير</span>
+            </div>
+          </div>
+          
+          <div class="platform-feature">
+            <div class="feature-icon">✓</div>
+            <div class="feature-content">
+              <span class="feature-title">سهولة في الاستخدام</span>
+              <span class="feature-description">واجهة بسيطة وتجربة مستخدم متميزة</span>
+            </div>
+          </div>
+          
+          <div class="platform-feature">
+            <div class="feature-icon">✓</div>
+            <div class="feature-content">
+              <span class="feature-title">شفافية كاملة</span>
+              <span class="feature-description">نتائج فورية وقابلة للتحقق والمراجعة</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="security-assurance">
+          <div class="security-badge">
+            <span class="badge-icon">🔒</span>
+            <span class="badge-text">بياناتك محمية وآمنة بنسبة 100%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Side - Registration Form -->
+    <div class="registration-section">
+      <div class="registration-card">
+        
+        <!-- Form Header -->
+        <div class="registration-header">
+          <h2>إنشاء حساب جديد</h2>
+          <p>قم بملء البيانات التالية للتسجيل في المنصة</p>
+        </div>
+
+        <!-- Response Messages -->
+        <div *ngIf="message" 
+             class="response-message" 
+             [class]="'response-' + messageType">
+          <div class="message-icon">
+            <i *ngIf="messageType === 'success'" class="fas fa-check-circle"></i>
+            <i *ngIf="messageType === 'error'" class="fas fa-exclamation-circle"></i>
+          </div>
+          <div class="message-content">
+            <p>{{ message }}</p>
+            <div *ngIf="messageType === 'success'" class="redirect-notice">
+              <i class="fas fa-clock"></i>
+              سيتم توجيهك إلى صفحة تسجيل الدخول خلال ثانيتين...
+            </div>
+          </div>
+        </div>
+
+        <!-- Registration Form -->
+        <form [formGroup]="registerForm" 
+              (ngSubmit)="onSubmit()" 
+              class="registration-form"
+              novalidate>
+
+          <!-- Username Field -->
+          <div class="form-field">
+            <label for="userName" class="field-label">
+              اسم المستخدم
+            </label>
+            <input 
+              id="userName" 
+              type="text" 
+              formControlName="userName"
+              class="form-input"
+              [class.input-error]="hasError('userName', 'required') || hasError('userName', 'minlength') || hasError('userName', 'maxlength')"
+              placeholder="أدخل اسم المستخدم (3-50 حرف)">
+            <div class="field-error" *ngIf="hasError('userName', 'required') || hasError('userName', 'minlength') || hasError('userName', 'maxlength')">
+              <i class="fas fa-exclamation-circle"></i>
+              {{ getErrorMessage('userName') }}
+            </div>
+          </div>
+
+          <!-- Email Field -->
+          <div class="form-field">
+            <label for="email" class="field-label">
+              البريد الإلكتروني
+            </label>
+            <input 
+              id="email" 
+              type="email" 
+              formControlName="email"
+              class="form-input"
+              [class.input-error]="hasError('email', 'required') || hasError('email', 'email')"
+              placeholder="example@email.com">
+            <div class="field-error" *ngIf="hasError('email', 'required') || hasError('email', 'email')">
+              <i class="fas fa-exclamation-circle"></i>
+              {{ getErrorMessage('email') }}
+            </div>
+          </div>
+
+          <!-- Full Name Field -->
+          <div class="form-field">
+            <label for="fullName" class="field-label">
+              الاسم الكامل
+            </label>
+            <input 
+              id="fullName" 
+              type="text" 
+              formControlName="fullName"
+              class="form-input"
+              [class.input-error]="hasError('fullName', 'required') || hasError('fullName', 'minlength') || hasError('fullName', 'maxlength')"
+              placeholder="أدخل الاسم الكامل كما في الهوية">
+            <div class="field-error" *ngIf="hasError('fullName', 'required') || hasError('fullName', 'minlength') || hasError('fullName', 'maxlength')">
+              <i class="fas fa-exclamation-circle"></i>
+              {{ getErrorMessage('fullName') }}
+            </div>
+          </div>
+
+          <!-- Password Field -->
+          <div class="form-field">
+            <label for="password" class="field-label">
+              كلمة المرور
+            </label>
+            <input 
+              id="password" 
+              type="password" 
+              formControlName="password"
+              class="form-input"
+              [class.input-error]="hasError('password', 'required') || hasError('password', 'minlength')"
+              placeholder="كلمة المرور (6 أحرف على الأقل)">
+            
+            <!-- Password Strength Indicator -->
+            <div class="password-strength" *ngIf="registerForm.get('password')?.value && registerForm.get('password')?.touched">
+              <div class="strength-indicator">
+                <div class="strength-bar" [class]="'strength-' + getPasswordStrength()"></div>
+              </div>
+              <span class="strength-text">{{ getPasswordStrengthText() }}</span>
+            </div>
+            
+            <div class="field-error" *ngIf="hasError('password', 'required') || hasError('password', 'minlength')">
+              <i class="fas fa-exclamation-circle"></i>
+              {{ getErrorMessage('password') }}
+            </div>
+          </div>
+
+          <!-- Confirm Password Field -->
+          <div class="form-field">
+            <label for="confirmPassword" class="field-label">
+              تأكيد كلمة المرور
+            </label>
+            <input 
+              id="confirmPassword" 
+              type="password" 
+              formControlName="confirmPassword"
+              class="form-input"
+              [class.input-error]="hasError('confirmPassword', 'required') || registerForm.errors?.['mismatch']"
+              placeholder="أعد إدخال كلمة المرور">
+            <div class="field-error" *ngIf="hasError('confirmPassword', 'required') || registerForm.errors?.['mismatch']">
+              <i class="fas fa-exclamation-circle"></i>
+              <span *ngIf="hasError('confirmPassword', 'required')">تأكيد كلمة المرور مطلوب</span>
+              <span *ngIf="registerForm.errors?.['mismatch']">كلمات المرور غير متطابقة</span>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button 
+            type="submit" 
+            class="submit-button"
+            [disabled]="isLoading || registerForm.invalid"
+            [class.button-loading]="isLoading">
+            <span class="button-text" *ngIf="!isLoading">
+              <i class="fas fa-user-plus"></i>
+              إنشاء الحساب
+            </span>
+            <span class="button-loading-text" *ngIf="isLoading">
+              <i class="fas fa-spinner fa-spin"></i>
+              جاري إنشاء الحساب...
+            </span>
+          </button>
+
+        </form>
+
+        <!-- Login Link -->
+        <div class="login-redirect">
+          <p class="redirect-text">
+            لديك حساب بالفعل؟ 
+            <a routerLink="/auth/login" class="redirect-link">
+              <i class="fas fa-sign-in-alt"></i>
+              تسجيل الدخول
+            </a>
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>

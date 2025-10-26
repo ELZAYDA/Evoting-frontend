@@ -1,0 +1,118 @@
+<div class="election-list-container">
+    <div class="election-list-container">
+  <!-- عنوان الصفحة -->
+  <div class="page-header">
+    <h1>الانتخابات</h1>
+    <p>استعرض الانتخابات الجارية والقادمة وشارك في صنع القرار</p>
+  </div>
+
+  <!-- فلاتر الانتخابات -->
+  <div class="filter-section">
+    <div class="filter-buttons">
+      <button 
+        [class.active]="selectedStatus === 'all'" 
+        (click)="filterElections('all')"
+        class="filter-btn"
+      >
+        جميع الانتخابات
+      </button>
+      <button 
+        [class.active]="selectedStatus === 'active'" 
+        (click)="filterElections('active')"
+        class="filter-btn"
+      >
+        الانتخابات النشطة
+      </button>
+      <button 
+        [class.active]="selectedStatus === 'completed'" 
+        (click)="filterElections('completed')"
+        class="filter-btn"
+      >
+        الانتخابات المنتهية
+      </button>
+    </div>
+  </div>
+
+  <!-- شبكة الانتخابات -->
+  <div class="elections-grid">
+    @for (election of filteredElections; track election.electionId) {
+      <div class="election-card">
+        <!-- حالة الانتخابات بدون صورة -->
+        <div class="election-header">
+          <div class="election-status" [class]="getStatusClass(election.status)">
+            {{ getStatusText(election.status) }}
+          </div>
+        </div>
+
+        <!-- محتوى البطاقة -->
+        <div class="election-content" >
+          <h3 class="election-title">{{ election.electionName }}</h3>
+          <p class="election-description">{{ election.description }}</p>
+          
+          <!-- معلومات الانتخابات -->
+          <div class="election-info">
+            <div class="info-item">
+              <i class="icon-calendar"></i>
+              <span class="info-label">تاريخ البدء:</span>
+              <span class="info-value">{{ formatDate(election.startDate) }}</span>
+            </div>
+            <div class="info-item">
+              <i class="icon-calendar"></i>
+              <span class="info-label">تاريخ الانتهاء:</span>
+              <span class="info-value">{{ formatDate(election.endDate) }}</span>
+            </div>
+            <div class="info-item">
+              <i class="icon-users"></i>
+              <span class="info-label">عدد المرشحين:</span>
+              <span class="info-value">{{ election.candidatesCount }}</span>
+            </div>
+            <div class="info-item" *ngIf="election.status">
+              <i class="icon-clock"></i>
+              <span class="info-label">متبقي:</span>
+              <span class="info-value highlight">{{ getDaysRemaining(election.endDate) }}</span>
+            </div>
+          </div>
+
+          <!-- أزرار الإجراءات -->
+          <div class="election-actions">
+            <button 
+              *ngIf="canVote(election)" 
+              class="btn-vote"
+              (click)="voteForElection(election.electionId)"
+            >
+              <i class="icon-vote"></i>
+              التصويت الآن
+            </button>
+            
+            <button 
+              *ngIf="!election.status" 
+              class="btn-results"
+              (click)="viewResults(election.electionId)"
+            >
+              <i class="icon-chart"></i>
+              عرض النتائج
+            </button>
+            
+            <button [routerLink]="[election.electionId,'candidates-list']"
+              class="btn-candidates"
+            >
+              <i class="icon-users"></i>
+              عرض المرشحين
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- حالة عدم وجود انتخابات -->
+  @if (filteredElections.length === 0) {
+    <div class="no-elections">
+      <div class="empty-state">
+        <i class="icon-election"></i>
+        <h3>لا توجد انتخابات حالياً</h3>
+        <p>لا توجد انتخابات متاحة للعرض حسب الفلتر المحدد</p>
+      </div>
+    </div>
+  }
+</div>

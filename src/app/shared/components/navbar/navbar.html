@@ -1,0 +1,58 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <div class="nav-left">
+      <a routerLink="/" class="nav-link" (click)="isMenuOpen=false">الرئيسية</a>
+      <a routerLink="/elections" class="nav-link" (click)="isMenuOpen=false">الانتخابات</a>
+    </div>
+
+    <div class="nav-center">
+      <span class="platform-name">منصة الانتخابات</span>
+    </div>
+
+    <div class="nav-right">
+      <ng-container *ngIf="isLoggedIn; else loginBtn">
+        <!-- زر الإعدادات (الترس) يظهر فقط للمسؤولين -->
+        <button 
+          *ngIf="isAdmin" 
+          class="settings-btn"
+          (click)="navigateToAdminDashboard()"
+          title="لوحة التحكم">
+          ⚙️
+        </button>
+        <button class="logout-btn" (click)="logout()">تسجيل خروج</button>
+      </ng-container>
+      <ng-template #loginBtn>
+        <button class="login-btn" (click)="navigateToLogin()">تسجيل دخول</button>
+      </ng-template>
+    </div>
+
+    <div class="mobile-menu-toggle">
+      <button (click)="toggleMenu()" class="hamburger">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="mobile-menu" [class.active]="isMenuOpen">
+    <a routerLink="/" class="mobile-nav-link" (click)="toggleMenu()">الرئيسية</a>
+    <a routerLink="/elections" class="mobile-nav-link" (click)="toggleMenu()">الانتخابات</a>
+    
+    <!-- زر الإعدادات في الموبايل للمسؤولين فقط -->
+    <div *ngIf="isLoggedIn && isAdmin">
+      <a class="mobile-nav-link settings-mobile" (click)="navigateToAdminDashboard(); toggleMenu()"
+         title="لوحة التحكم">
+        ⚙️ الإعدادات
+      </a>
+    </div>
+    
+    <div *ngIf="isLoggedIn">
+      <hr>
+      <button class="logout-btn-mobile" (click)="logout(); toggleMenu()">تسجيل خروج</button>
+    </div>
+    
+    <div *ngIf="!isLoggedIn">
+      <hr>
+      <button class="login-btn-mobile" (click)="navigateToLogin(); toggleMenu()">تسجيل دخول</button>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,148 @@
+<!-- view-election.component.html -->
+<div class="view-election-page">
+  <!-- رأس الصفحة -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <button (click)="onBack()" class="back-btn">← رجوع للقائمة</button>
+        <h1>تفاصيل الانتخاب</h1>
+        <p class="page-description">عرض المعلومات الكاملة عن الانتخاب</p>
+      </div>
+      
+      <div class="header-actions" *ngIf="election">
+        <button (click)="onEdit()" class="btn btn-primary">
+          ✏️ تعديل الانتخاب
+        </button>
+        <button (click)="onDelete()" class="btn btn-danger">
+          🗑️ حذف الانتخاب
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- محتوى الصفحة -->
+  <div class="content-section">
+    <!-- حالة التحميل -->
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>جاري تحميل بيانات الانتخاب...</p>
+    </div>
+
+    <!-- رسالة الخطأ -->
+    <div *ngIf="errorMessage && !isLoading" class="error-state">
+      <div class="error-icon">⚠️</div>
+      <h3>فشل في تحميل البيانات</h3>
+      <p>{{ errorMessage }}</p>
+      <button (click)="retryLoading()" class="btn btn-primary">إعادة المحاولة</button>
+    </div>
+
+    <!-- بيانات الانتخاب -->
+    <div *ngIf="election && !isLoading" class="election-details">
+      
+      <!-- بطاقة المعلومات الأساسية -->
+      <div class="info-card">
+        <div class="card-header">
+          <h2>{{ election.electionName }}</h2>
+          <span [class]="getStatusClass(election.status)" class="status-large">
+            {{ getElectionStatus() }}
+          </span>
+        </div>
+        
+        <div class="card-body">
+          <p class="election-description" *ngIf="election.description">
+            {{ election.description }}
+          </p>
+          
+          <div class="info-grid">
+            <div class="info-item">
+              <label>تاريخ الإنشاء:</label>
+              <span>{{ formatDate(election.createdAt) }}</span>
+            </div>
+            <div class="info-item">
+              <label>تاريخ البدء:</label>
+              <span>{{ formatDate(election.startDate) }}</span>
+            </div>
+            <div class="info-item">
+              <label>تاريخ الانتهاء:</label>
+              <span>{{ formatDate(election.endDate) }}</span>
+            </div>
+            <div class="info-item">
+              <label>عدد المرشحين:</label>
+              <span class="count-badge">{{ election.candidatesCount || 0 }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- إحصائيات الانتخاب -->
+      <div class="stats-grid" *ngIf="isElectionActive() || isElectionCompleted()">
+        <div class="stat-card">
+          <div class="stat-icon">🗳️</div>
+          <div class="stat-info">
+            <h3>{{ electionStats.totalVotes }}</h3>
+            <p>إجمالي الأصوات</p>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon">📊</div>
+          <div class="stat-info">
+            <h3>{{ electionStats.votingPercentage }}%</h3>
+            <p>نسبة المشاركة</p>
+          </div>
+        </div>
+        
+        <div class="stat-card" *ngIf="electionStats.leadingCandidate">
+          <div class="stat-icon">👑</div>
+          <div class="stat-info">
+            <h3>{{ electionStats.leadingCandidate }}</h3>
+            <p>المتصدر حالياً</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- حالة الانتخاب -->
+      <div class="status-card">
+        <h3>حالة الانتخاب الحالية</h3>
+        <div class="status-info">
+          <div class="status-item" [class.active]="isElectionUpcoming()">
+            <span class="status-dot"></span>
+            <span>قادم</span>
+          </div>
+          <div class="status-item" [class.active]="isElectionActive()">
+            <span class="status-dot"></span>
+            <span>جاري</span>
+          </div>
+          <div class="status-item" [class.active]="isElectionCompleted()">
+            <span class="status-dot"></span>
+            <span>منتهي</span>
+          </div>
+          <div class="status-item" [class.active]="!election.status">
+            <span class="status-dot"></span>
+            <span>معطل</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- معلومات إضافية -->
+      <div class="additional-info">
+        <h3>معلومات إضافية</h3>
+        <div class="info-list">
+          <div class="info-row">
+            <span class="info-label">معرف الانتخاب:</span>
+            <span class="info-value">{{ election.electionId }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">الحالة الفعلية:</span>
+            <span class="info-value">{{ getStatusText(election.status) }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">مدة الانتخاب:</span>
+            <span class="info-value">{{ calculateElectionDuration() }} يوم</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

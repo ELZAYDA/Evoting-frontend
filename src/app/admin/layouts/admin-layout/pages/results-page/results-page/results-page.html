@@ -1,0 +1,236 @@
+<!-- results-page.component.html -->
+<div class="results-page">
+  <!-- رأس الصفحة -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>نتائج الانتخابات</h1>
+      <p class="page-description">عرض النتائج والإحصائيات بعد انتهاء الانتخابات</p>
+    </div>
+  </div>
+
+  <!-- فلتر الانتخابات -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <label for="electionFilter">اختر الانتخاب:</label>
+      <select 
+        id="electionFilter"
+        [(ngModel)]="electionFilter" 
+        (change)="onElectionChange()"
+        class="filter-select"
+        [disabled]="isLoadingElections">
+        <option value="">اختر الانتخاب...</option>
+        <option *ngFor="let election of elections" [value]="election.electionId">
+          {{ election.electionName }}
+        </option>
+      </select>
+      <div *ngIf="isLoadingElections" class="loading-text">جاري تحميل الانتخابات...</div>
+    </div>
+  </div>
+
+  <!-- رسالة الخطأ -->
+  <div *ngIf="errorMessage" class="error-message">
+    <div class="error-icon">⚠️</div>
+    <p>{{ errorMessage }}</p>
+    <button *ngIf="electionId" (click)="retryLoading()" class="btn btn-retry">إعادة المحاولة</button>
+  </div>
+
+  <!-- المحتوى الرئيسي -->
+  <div *ngIf="electionId && !isLoading" class="content-section">
+    
+    <!-- التبويبات -->
+    <div class="tabs-container">
+      <div class="tabs">
+        <button 
+          [class.active]="activeTab === 'results'" 
+          (click)="setActiveTab('results')"
+          class="tab-btn">
+          📊 النتائج الكاملة
+        </button>
+        <button 
+          [class.active]="activeTab === 'winner'" 
+          (click)="setActiveTab('winner')"
+          class="tab-btn">
+          🏆 الفائز
+        </button>
+        <button 
+          [class.active]="activeTab === 'statistics'" 
+          (click)="setActiveTab('statistics')"
+          class="tab-btn">
+          📈 الإحصائيات
+        </button>
+      </div>
+    </div>
+
+    <!-- تبويب النتائج الكاملة -->
+    <div *ngIf="activeTab === 'results' && results" class="tab-content">
+      
+      <!-- معلومات الانتخاب -->
+      <div class="election-info-card">
+        <h2>{{ results.electionTitle }}</h2>
+        <div class="election-stats">
+          <div class="stat">
+            <span class="stat-value">{{ results.totalVotes }}</span>
+            <span class="stat-label">إجمالي الأصوات</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">{{ results.totalCandidates }}</span>
+            <span class="stat-label">عدد المرشحين</span>
+          </div>
+          <div class="stat">
+            <span class="stat-value">{{ formatDate(results.generatedAt) }}</span>
+            <span class="stat-label">آخر تحديث</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- جدول النتائج -->
+      <div class="results-table-section">
+        <h3>النتائج التفصيلية</h3>
+        <div class="table-container">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th width="80">الترتيب</th>
+                <th>المرشح</th>
+                <th width="120">الحزب</th>
+                <th width="120">عدد الأصوات</th>
+                <th width="100">النسبة</th>
+                <th width="120">شريط التقدم</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let candidate of results.candidates" [class]="getMedalClass(candidate.rank)">
+                <td>
+                  <div class="rank-cell">
+                    <span class="medal-icon">{{ getMedalIcon(candidate.rank) }}</span>
+                    <span class="rank-number">{{ candidate.rank }}</span>
+                  </div>
+                </td>
+                <td>
+                  <strong>{{ candidate.candidateName }}</strong>
+                </td>
+                <td>
+                  <span class="party-badge">{{ candidate.party || 'مستقل' }}</span>
+                </td>
+                <td>
+                  <span class="votes-count">{{ candidate.totalVotes }}</span>
+                </td>
+                <td>
+                  <span class="percentage">{{ candidate.percentage }}%</span>
+                </td>
+                <td>
+                  <div class="progress-bar">
+                    <div 
+                      class="progress-fill" 
+                      [style.width.%]="candidate.percentage">
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- تبويب الفائز -->
+    <div *ngIf="activeTab === 'winner' && winner" class="tab-content">
+      
+      <div class="winner-card">
+        <div class="winner-header">
+          <div class="winner-icon">👑</div>
+          <h2>الفائز بالانتخاب</h2>
+        </div>
+        
+        <div class="winner-info">
+          <div class="winner-name">{{ winner.winnerName }}</div>
+          <div class="winner-party">{{ winner.winnerParty }}</div>
+          <div class="winner-stats">
+            <div class="winner-stat">
+              <span class="stat-label">عدد الأصوات:</span>
+              <span class="stat-value">{{ winner.totalVotes }}</span>
+            </div>
+            <div class="winner-stat">
+              <span class="stat-label">النسبة:</span>
+              <span class="stat-value">{{ winner.percentage }}%</span>
+            </div>
+            <div class="winner-stat" *ngIf="winner.margin > 0">
+              <span class="stat-label">الفرق عن الثاني:</span>
+              <span class="stat-value">{{ winner.margin }} صوت</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- تبويب الإحصائيات -->
+    <div *ngIf="activeTab === 'statistics' && statistics" class="tab-content">
+      
+      <div class="statistics-grid">
+        <div class="stat-card">
+          <div class="stat-icon">📊</div>
+          <div class="stat-info">
+            <h3>{{ statistics.totalVotes }}</h3>
+            <p>إجمالي الأصوات</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-info">
+            <h3>{{ statistics.totalCandidates }}</h3>
+            <p>عدد المرشحين</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">🎯</div>
+          <div class="stat-info">
+            <h3>{{ statistics.votingRate }}%</h3>
+            <p>نسبة المشاركة</p>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon" [class.close-race]="statistics.closeRace">⚡</div>
+          <div class="stat-info">
+            <h3>{{ statistics.closeRace ? 'نعم' : 'لا' }}</h3>
+            <p>سباق متقارب</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="additional-stats">
+        <h3>معلومات إضافية</h3>
+        <div class="stats-list">
+          <div class="stat-item">
+            <span class="stat-label">الفائز:</span>
+            <span class="stat-value">{{ statistics.winner }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">آخر تحديث:</span>
+            <span class="stat-value">{{ formatDate(statistics.generatedAt) }}</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- حالة التحميل -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>جاري تحميل النتائج...</p>
+  </div>
+
+  <!-- حالة عدم اختيار انتخاب -->
+  <div *ngIf="!electionId && !isLoading" class="empty-state">
+    <div class="empty-icon">📋</div>
+    <h3>اختر الانتخاب</h3>
+    <p>يرجى اختيار الانتخاب لعرض النتائج</p>
+  </div>
+
+</div>

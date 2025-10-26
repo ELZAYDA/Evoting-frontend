@@ -1,0 +1,487 @@
+/* users-page.component.css */
+.users-page {
+  padding: 20px;
+  background: #0f0f0f;
+  min-height: 100vh;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* رأس الصفحة */
+.page-header {
+  margin-bottom: 30px;
+}
+
+.header-content h1 {
+  color: #fff;
+  margin: 0 0 10px 0;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.page-description {
+  color: #999;
+  margin: 0;
+  font-size: 16px;
+}
+
+/* إحصائيات */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  border-color: #3b82f6;
+}
+
+.stat-content h3 {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.stat-content p {
+  margin: 5px 0 0 0;
+  color: #999;
+  font-size: 14px;
+}
+
+.stat-icon {
+  font-size: 32px;
+  opacity: 0.8;
+}
+
+/* أدوات البحث */
+.tools-section {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 25px;
+}
+
+.search-filters {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  display: flex;
+  flex: 1;
+  min-width: 300px;
+  gap: 10px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: #0f0f0f;
+  color: #e0e0e0;
+  font-size: 14px;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.filter-select {
+  padding: 12px 16px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: #0f0f0f;
+  color: #e0e0e0;
+  min-width: 150px;
+}
+
+.results-info {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #333;
+}
+
+.results-count {
+  color: #999;
+  font-size: 14px;
+}
+
+/* الأزرار */
+.btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.btn-icon {
+  background: transparent;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 16px;
+}
+
+.btn-icon:hover {
+  background: #333;
+  transform: scale(1.1);
+}
+
+.btn-delete:hover {
+  background: #dc2626;
+}
+
+.btn-reset-password:hover {
+  background: #d97706;
+}
+
+.btn-activate:hover {
+  background: #059669;
+}
+
+.btn-deactivate:hover {
+  background: #d97706;
+}
+
+.btn-role:hover {
+  background: #7c3aed;
+}
+
+/* رسالة الخطأ */
+.error-message {
+  background: #7f1d1d;
+  border: 1px solid #dc2626;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.error-message p {
+  margin: 0;
+  color: #fca5a5;
+}
+
+/* الجدول */
+.table-section {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 30px;
+}
+
+.loading-state, .empty-state {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #333;
+  border-top: 3px solid #3b82f6;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.empty-state h3 {
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.empty-state p {
+  color: #999;
+  margin: 0;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th {
+  background: #262626;
+  padding: 16px;
+  text-align: right;
+  font-weight: 600;
+  color: #fff;
+  border-bottom: 1px solid #333;
+}
+
+.data-table td {
+  padding: 16px;
+  border-bottom: 1px solid #333;
+  color: #e0e0e0;
+}
+
+.data-table tr:hover {
+  background: #222;
+}
+
+.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* معلومات المستخدم */
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-name {
+  color: #fff;
+  font-weight: 600;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.user-email {
+  color: #999;
+  font-size: 13px;
+}
+
+.user-username {
+  color: #666;
+  font-size: 12px;
+}
+
+/* الأدوار */
+.role-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.role-admin {
+  background: #7c3aed;
+  color: white;
+}
+
+.role-user {
+  background: #333;
+  color: #ccc;
+}
+
+/* الحالة */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-active {
+  background: #065f46;
+  color: #10b981;
+}
+
+.status-inactive {
+  background: #451a03;
+  color: #f59e0b;
+}
+
+/* التاريخ */
+.date {
+  color: #999;
+  font-size: 13px;
+}
+
+/* الإجراءات */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* Dropdown */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  min-width: 150px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+  z-index: 1;
+  top: 100%;
+  left: 0;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-item {
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  background: none;
+  color: #e0e0e0;
+  text-align: right;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.dropdown-item:hover {
+  background: #333;
+}
+
+/* الترقيم */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.page-btn {
+  padding: 8px 16px;
+  border: 1px solid #333;
+  background: #1a1a1a;
+  color: #e0e0e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: #333;
+  border-color: #3b82f6;
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 8px;
+}
+
+.page-number {
+  padding: 8px 12px;
+  border: 1px solid #333;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.page-number:hover {
+  background: #333;
+}
+
+.page-number.active {
+  background: #3b82f6;
+  border-color: #3b82f6;
+  color: white;
+}
+
+/* التجاوب مع الشاشات الصغيرة */
+@media (max-width: 768px) {
+  .users-page {
+    padding: 15px;
+  }
+
+  .search-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-box {
+    min-width: auto;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .data-table {
+    font-size: 14px;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 12px 8px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .user-details {
+    display: none;
+  }
+}

@@ -1,0 +1,25 @@
+<div class="voter-check-container">
+  <h2>تحقق من هويتك للتصويت</h2>
+
+  <form (ngSubmit)="onSubmit()" [formGroup]="voterForm">
+    <div class="form-group">
+      <label for="nationalId">الرقم القومي</label>
+      <input
+        id="nationalId"
+        type="text"
+        formControlName="nationalId"
+        placeholder="أدخل الرقم القومي"
+      />
+      <small *ngIf="voterForm.get('nationalId')?.invalid && voterForm.get('nationalId')?.touched">
+        الرقم القومي مطلوب وطوله يجب أن يكون 14 رقمًا
+      </small>
+    </div>
+
+    <button type="submit" [disabled]="voterForm.invalid || loading">
+      تحقق
+    </button>
+  </form>
+
+  <p class="success" *ngIf="successMessage">{{ successMessage }}</p>
+  <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+</div>

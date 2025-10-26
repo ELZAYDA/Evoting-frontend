@@ -1,0 +1,184 @@
+<div class="vote-container">
+  <!-- شريط التقدم -->
+  <div class="progress-bar" [class.hidden]="voteSubmitted">
+    <div class="progress-step active">1</div>
+    <div class="progress-line"></div>
+    <div class="progress-step" [class.active]="selectedCandidate">2</div>
+    <div class="progress-line"></div>
+    <div class="progress-step" [class.active]="voteSubmitted">3</div>
+  </div>
+
+  <!-- حالة التصويت المكتمل -->
+  <div class="vote-success" *ngIf="voteSubmitted">
+    <div class="success-content">
+      <div class="success-icon">✓</div>
+      <h2>تم التصويت بنجاح!</h2>
+      <p>شكراً لمشاركتك في العملية الانتخابية. صوتك يساهم في صنع القرار.</p>
+      <div class="success-actions">
+        <button class="btn-primary" (click)="viewResults()">عرض النتائج</button>
+        <button class="btn-secondary" (click)="backToElections()">العودة إلى الانتخابات</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- محتوى التصويت الرئيسي -->
+  <div class="vote-content" *ngIf="!voteSubmitted">
+    <!-- عنوان الصفحة -->
+    <div class="vote-header">
+      <button class="back-btn" (click)="backToElections()">
+        <span class="back-icon">←</span>
+        رجوع
+      </button>
+      <div class="header-content">
+        <h1>{{ electionTitle }}</h1>
+        <p>{{ electionDescription }}</p>
+      </div>
+    </div>
+
+    <!-- أدوات التصفية والبحث -->
+    <div class="filter-tools" *ngIf="candidates.length > 0">
+      <div class="search-container">
+        <div class="search-box">
+          <input 
+            type="text" 
+            placeholder="ابحث عن مرشح أو حزب..." 
+            [value]="searchTerm"
+            (input)="onSearchChange($event)"
+            class="search-input"
+          >
+          <span class="search-icon">🔍</span>
+        </div>
+        
+        <button class="clear-filters-btn" (click)="clearFilters()">
+          مسح الفلاتر
+        </button>
+      </div>
+
+      <div class="filter-controls">
+        <div class="filter-group" *ngIf="elections.length > 2">
+          <label for="election-filter">تصفية حسب الانتخابة:</label>
+          <select id="election-filter" [value]="selectedElection" (change)="onElectionChange($event)" class="filter-select">
+            <option value="all">جميع الانتخابات</option>
+            <ng-container *ngFor="let election of elections">
+              <option *ngIf="election !== 'all'" [value]="election">{{election}}</option>
+            </ng-container>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="sort-filter">ترتيب حسب:</label>
+          <select id="sort-filter" [value]="sortBy" (change)="onSortChange($event)" class="filter-select">
+            <option value="name">الاسم</option>
+            <option value="votes">عدد الأصوات</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- حالة التحميل -->
+    <div *ngIf="candidates.length === 0" class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>جاري تحميل بيانات المرشحين...</p>
+    </div>
+
+    <!-- قائمة المرشحين -->
+    <div class="candidates-list" *ngIf="filteredCandidates.length > 0">
+      <div
+        *ngFor="let candidate of filteredCandidates; trackBy: trackByCandidateId"
+        class="candidate-card"
+        [class.selected]="selectedCandidate === candidate.candidateId"
+        (click)="selectCandidate(candidate.candidateId)"
+      >
+        <div class="candidate-image">
+          <img 
+            [src]="candidate.photoUrl || 'assets/default-candidate.jpg'" 
+            [alt]="candidate.fullName"
+            onerror="this.src='assets/default-candidate.jpg'"
+          >
+          <div class="selection-indicator">
+            <div class="checkmark" *ngIf="selectedCandidate === candidate.candidateId">✓</div>
+          </div>
+          <div class="votes-badge">
+            <span>{{ candidate.votesCount | number }} صوت</span>
+          </div>
+        </div>
+       
+        <div class="candidate-info">
+          <h3>{{ candidate.fullName }}</h3>
+          <p class="position">{{ candidate.party }}</p>
+          <span class="election-badge">{{ candidate.electionTitle }}</span>
+          
+          <!-- نسبة الأصوات -->
+          <div class="votes-percentage" *ngIf="candidate.votesCount > 0">
+            <span class="percentage">{{ calculatePercentage(candidate.votesCount) }}%</span>
+            <div class="progress-bar-inline">
+              <div 
+                class="progress-fill-inline" 
+                [style.width]="calculatePercentage(candidate.votesCount) + '%'"
+              ></div>
+            </div>
+          </div>
+
+          <div class="program" *ngIf="candidate.biography">
+            <h4>السيرة الذاتية:</h4>
+            <p>{{ candidate.biography }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- حالة عدم وجود نتائج -->
+    <div *ngIf="candidates.length > 0 && filteredCandidates.length === 0" class="no-candidates">
+      <div class="empty-state">
+        <h3>لا توجد نتائج</h3>
+        <p>لم نتمكن من العثور على أي مرشحين ينطبقون على معايير البحث الخاصة بك.</p>
+        <button class="btn-primary" (click)="clearFilters()">
+          عرض جميع المرشحين
+        </button>
+      </div>
+    </div>
+
+    <!-- زر التصويت -->
+    <div class="vote-actions" *ngIf="filteredCandidates.length > 0">
+      <button
+        class="vote-btn"
+        [class.disabled]="!selectedCandidate"
+        [class.loading]="isSubmitting"
+        (click)="submitVote()"
+        [disabled]="!selectedCandidate || isSubmitting"
+      >
+        <span *ngIf="!isSubmitting">التصويت الآن</span>
+        <span *ngIf="isSubmitting">جاري التصويت...</span>
+      </button>
+     
+      <p class="vote-note" *ngIf="!selectedCandidate">
+        يرجى اختيار مرشح واحد للتصويت
+      </p>
+    </div>
+
+    <!-- حالة عدم وجود مرشحين -->
+    <div class="no-candidates" *ngIf="candidates.length === 0">
+      <div class="empty-state">
+        <h3>لا يوجد مرشحين في هذه الانتخابات حالياً</h3>
+        <p>يمكنك العودة لاحقاً عندما يتم تسجيل المرشحين</p>
+        <button class="btn-primary" (click)="backToElections()">العودة إلى الانتخابات</button>
+      </div>
+    </div>
+
+    <!-- إحصائيات -->
+    <div class="stats-section" *ngIf="filteredCandidates.length > 0">
+      <div class="stat-item">
+        <span class="stat-number">{{ filteredCandidates.length }}</span>
+        <span class="stat-label">مرشح</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ getActiveCandidatesCount() }}</span>
+        <span class="stat-label">مرشح نشط</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ getTotalVotes() | number }}</span>
+        <span class="stat-label">إجمالي الأصوات</span>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,270 @@
+<!-- settings-page.html -->
+<div class="settings-page">
+  <!-- رأس الصفحة -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>الإعدادات</h1>
+      <p>إدارة بياناتك الشخصية وإعدادات الأمان</p>
+    </div>
+  </div>
+
+  <!-- محتوى الصفحة -->
+  <div class="settings-content">
+    <!-- قسم البيانات الشخصية -->
+    <div class="settings-section">
+      <div class="section-header">
+        <h2>البيانات الشخصية</h2>
+        <p>تحديث معلوماتك الشخصية والمظهر</p>
+      </div>
+
+      <form #personalInfoForm="ngForm" (ngSubmit)="updatePersonalInfo()" class="settings-form">
+        <div class="form-group">
+          <label for="fullName">الاسم الكامل</label>
+          <input 
+            type="text" 
+            id="fullName"
+            name="fullName"
+            [(ngModel)]="personalInfo.fullName"
+            required
+            class="form-input"
+            placeholder="أدخل اسمك الكامل">
+        </div>
+
+        <div class="form-group">
+          <label for="userName">اسم المستخدم</label>
+          <input 
+            type="text" 
+            id="userName"
+            name="userName"
+            [(ngModel)]="personalInfo.userName"
+            required
+            (blur)="checkUsernameAvailability()"
+            [class.loading]="checkingUsername"
+            class="form-input"
+            placeholder="أدخل اسم المستخدم">
+          
+          <div class="validation-message" *ngIf="usernameMessage">
+            <span [class.valid]="isUsernameAvailable" [class.invalid]="!isUsernameAvailable">
+              {{ usernameMessage }}
+            </span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">البريد الإلكتروني</label>
+          <input 
+            type="email" 
+            id="email"
+            name="email"
+            [(ngModel)]="userProfile.email"
+            disabled
+            class="form-input disabled"
+            placeholder="البريد الإلكتروني">
+          <small class="hint">لا يمكن تغيير البريد الإلكتروني</small>
+        </div>
+
+        <div class="form-group">
+          <label>الصلاحيات</label>
+          <div class="roles-container">
+            <span *ngFor="let role of userProfile.roles" class="role-badge">
+              {{ role }}
+            </span>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+            [disabled]="!personalInfoForm.valid || isUpdatingPersonalInfo">
+            <span *ngIf="isUpdatingPersonalInfo" class="loading-spinner"></span>
+            {{ isUpdatingPersonalInfo ? 'جاري الحفظ...' : 'حفظ التغييرات' }}
+          </button>
+          
+          <button 
+            type="button" 
+            class="btn btn-secondary"
+            (click)="resetPersonalInfoForm()"
+            [disabled]="isUpdatingPersonalInfo">
+            إلغاء
+          </button>
+        </div>
+
+        <!-- رسالة النتيجة -->
+        <div *ngIf="personalInfoMessage" class="result-message" [class.success]="personalInfoSuccess" [class.error]="!personalInfoSuccess">
+          {{ personalInfoMessage }}
+        </div>
+      </form>
+    </div>
+
+    <!-- قسم الأمان -->
+    <div class="settings-section">
+      <div class="section-header">
+        <h2>الأمان</h2>
+        <p>إدارة كلمة المرور وإعدادات الحساب</p>
+      </div>
+
+      <form #passwordForm="ngForm" (ngSubmit)="changePassword()" class="settings-form">
+        <div class="form-group">
+          <label for="currentPassword">كلمة المرور الحالية</label>
+          <input 
+            type="password" 
+            id="currentPassword"
+            name="currentPassword"
+            [(ngModel)]="passwordInfo.currentPassword"
+            required
+            class="form-input"
+            placeholder="أدخل كلمة المرور الحالية">
+        </div>
+
+        <div class="form-group">
+          <label for="newPassword">كلمة المرور الجديدة</label>
+          <input 
+            type="password" 
+            id="newPassword"
+            name="newPassword"
+            [(ngModel)]="passwordInfo.newPassword"
+            required
+            minlength="6"
+            class="form-input"
+            placeholder="أدخل كلمة المرور الجديدة">
+          <small class="hint">يجب أن تكون كلمة المرور 6 أحرف على الأقل</small>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">تأكيد كلمة المرور</label>
+          <input 
+            type="password" 
+            id="confirmPassword"
+            name="confirmPassword"
+            [(ngModel)]="passwordInfo.confirmPassword"
+            required
+            class="form-input"
+            [class.error]="passwordInfo.newPassword !== passwordInfo.confirmPassword && passwordInfo.confirmPassword"
+            placeholder="أعد إدخال كلمة المرور الجديدة">
+          
+          <div class="validation-message" *ngIf="passwordInfo.newPassword !== passwordInfo.confirmPassword && passwordInfo.confirmPassword">
+            <span class="invalid">كلمات المرور غير متطابقة</span>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+            [disabled]="!passwordForm.valid || 
+                       passwordInfo.newPassword !== passwordInfo.confirmPassword ||
+                       isChangingPassword">
+            <span *ngIf="isChangingPassword" class="loading-spinner"></span>
+            {{ isChangingPassword ? 'جاري التغيير...' : 'تغيير كلمة المرور' }}
+          </button>
+          
+          <button 
+            type="button" 
+            class="btn btn-secondary"
+            (click)="resetPasswordForm()"
+            [disabled]="isChangingPassword">
+            إلغاء
+          </button>
+        </div>
+
+        <!-- رسالة النتيجة -->
+        <div *ngIf="passwordMessage" class="result-message" [class.success]="passwordSuccess" [class.error]="!passwordSuccess">
+          {{ passwordMessage }}
+        </div>
+      </form>
+    </div>
+
+    <!-- قسم إدارة الصلاحيات (للمسؤولين فقط) -->
+    <div class="settings-section" *ngIf="isAdmin">
+      <div class="section-header">
+        <h2>إدارة الصلاحيات</h2>
+        <p>إدارة صلاحيات المستخدمين (للمسؤولين فقط)</p>
+      </div>
+
+      <!-- البحث عن المستخدم -->
+      <div class="user-search">
+        <div class="form-group">
+          <label for="userEmail">البحث عن مستخدم بالبريد الإلكتروني</label>
+          <div class="search-input-container">
+            <input 
+              type="email" 
+              id="userEmail"
+              [(ngModel)]="searchEmail"
+              class="form-input"
+              placeholder="أدخل البريد الإلكتروني للمستخدم">
+            <button 
+              type="button" 
+              class="btn btn-primary"
+              (click)="searchUser()"
+              [disabled]="!searchEmail || isSearchingUser">
+              <span *ngIf="isSearchingUser" class="loading-spinner"></span>
+              {{ isSearchingUser ? 'جاري البحث...' : 'بحث' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- نتائج البحث -->
+      <div *ngIf="searchedUser" class="user-results">
+        <div class="user-info">
+          <h4>بيانات المستخدم</h4>
+          <div class="user-details">
+            <p><strong>البريد الإلكتروني:</strong> {{ searchedUser.email }}</p>
+            <p><strong>اسم المستخدم:</strong> {{ personalInfo.userName }}</p>
+            <p><strong>الاسم الكامل:</strong> {{ personalInfo.fullName }}</p>
+          </div>
+
+          <!-- الصلاحيات الحالية -->
+          <div class="current-roles">
+            <h5>الصلاحيات الحالية</h5>
+            <div class="roles-container">
+              <span *ngFor="let role of searchedUser.roles" class="role-badge">
+                {{ role }}
+                <button 
+                  class="remove-role-btn"
+                  (click)="removeRole(searchedUser.email, role)"
+                  title="إزالة الصلاحية">
+                  ×
+                </button>
+              </span>
+              <div *ngIf="searchedUser.roles.length === 0" class="no-roles">
+                لا توجد صلاحيات
+              </div>
+            </div>
+          </div>
+
+          <!-- إضافة صلاحية جديدة -->
+          <div class="add-role">
+            <h5>إضافة صلاحية جديدة</h5>
+            <div class="add-role-form">
+              <select [(ngModel)]="selectedRole" class="form-input">
+                <option value="">اختر صلاحية...</option>
+                <option value="Admin">مسؤول</option>
+                <option value="User">مستخدم عادي</option>
+                <option value="Moderator">مشرف</option>
+                <option value="Candidate">مرشح</option>
+                <option value="Voter">مصوت</option>
+                <!-- تضيف أي صلاحيات تانيه عندك -->
+            
+              </select>
+              <button 
+                type="button" 
+                class="btn btn-primary"
+                (click)="assignRole(searchedUser.email, selectedRole)"
+                [disabled]="!selectedRole || isManagingRoles">
+                <span *ngIf="isManagingRoles" class="loading-spinner"></span>
+                إضافة صلاحية
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- رسائل إدارة الصلاحيات -->
+      <div *ngIf="roleManagementMessage" class="result-message" [class.success]="roleManagementSuccess" [class.error]="!roleManagementSuccess">
+        {{ roleManagementMessage }}
+      </div>
+    </div>
+  </div>
+</div>
