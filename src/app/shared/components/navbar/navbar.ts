@@ -61,7 +61,7 @@ export class NavbarComponent implements OnInit {
   }
 
   navigateToAdminDashboard(): void {
-    this.router.navigate(['/admin/elections']);
+    this.router.navigate(['/admin/']);
   }
 
   logout(): void {

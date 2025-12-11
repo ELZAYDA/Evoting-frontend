@@ -1,0 +1,138 @@
+<div class="add-candidate-page">
+  <!-- Header -->
+  <div class="page-header">
+    <button class="back-btn" (click)="goBack()">← Back</button>
+    <h1>Add New Candidate</h1>
+    <p>Enter candidate details</p>
+  </div>
+
+  <!-- System Status -->
+  <div class="system-status" *ngIf="systemInfo">
+    <div class="status-icon">
+      {{ getStateIcon(systemInfo.state.state) }}
+    </div>
+    <div class="status-info">
+      <h3>System Status: {{ getStateName(systemInfo.state.state) }}</h3>
+      <p>Candidates can be added anytime</p>
+    </div>
+  </div>
+
+  <!-- Add Candidate Form -->
+  <div class="form-container">
+    <form (ngSubmit)="addCandidate()" #candidateForm="ngForm">
+      <!-- Name -->
+      <div class="form-group">
+        <label for="name">Candidate Name *</label>
+        <input 
+          type="text" 
+          id="name" 
+          name="name" 
+          [(ngModel)]="candidate.name" 
+          required
+          placeholder="Enter candidate name"
+          class="form-control"
+        >
+        <div class="form-hint">Full name required</div>
+      </div>
+
+      <!-- Party -->
+      <div class="form-group">
+        <label for="party">Party Name *</label>
+        <input 
+          type="text" 
+          id="party" 
+          name="party" 
+          [(ngModel)]="candidate.party" 
+          required
+          placeholder="Enter party name"
+          class="form-control"
+        >
+      </div>
+
+      <!-- Age -->
+      <div class="form-group">
+        <label for="age">Age *</label>
+        <input 
+          type="number" 
+          id="age" 
+          name="age" 
+          [(ngModel)]="candidate.age" 
+          required
+          min="21"
+          max="100"
+          placeholder="Age (21 years or older)"
+          class="form-control"
+        >
+        <div class="form-hint">Must be 21 years or older</div>
+      </div>
+
+      <!-- Qualification -->
+      <div class="form-group">
+        <label for="qualification">Qualification *</label>
+        <textarea 
+          id="qualification" 
+          name="qualification" 
+          [(ngModel)]="candidate.qualification" 
+          required
+          placeholder="Enter educational qualification"
+          class="form-control"
+          rows="3"
+        ></textarea>
+        <div class="form-hint">Example: Bachelor's Degree in Engineering</div>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="form-actions">
+        <button 
+          type="submit" 
+          class="btn-submit"
+          [class.loading]="isSubmitting"
+          [disabled]="!candidateForm.form.valid || isSubmitting"
+        >
+          <span *ngIf="isSubmitting">
+            <div class="spinner"></div>
+            Adding Candidate...
+          </span>
+          <span *ngIf="!isSubmitting">Add Candidate</span>
+        </button>
+        
+        <button 
+          type="button" 
+          class="btn-cancel"
+          (click)="goBack()"
+          [disabled]="isSubmitting"
+        >
+          Cancel
+        </button>
+      </div>
+
+      <!-- Form Note -->
+      <div class="form-note">
+        ⚠️ Note: Candidate will be added to database and transaction will be recorded on blockchain.
+      </div>
+    </form>
+  </div>
+
+  <!-- Success Message -->
+  <div class="success-message" *ngIf="successMessage">
+    <div class="success-icon">✅</div>
+    <h3>Candidate Added Successfully!</h3>
+    <p>{{ successMessage }}</p>
+    <div class="transaction-info" *ngIf="transactionHash">
+      <span class="label">Transaction Hash:</span>
+      <span class="hash">{{ transactionHash | slice:0:20 }}...</span>
+    </div>
+    <div class="success-actions">
+      <button class="btn-primary" (click)="addAnother()">Add Another Candidate</button>
+      <button class="btn-secondary" (click)="goBack()">Return to Dashboard</button>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div class="error-message" *ngIf="errorMessage">
+    <div class="error-icon">❌</div>
+    <h3>Error</h3>
+    <p>{{ errorMessage }}</p>
+    <button class="btn-primary" (click)="clearError()">Try Again</button>
+  </div>
+</div>

@@ -1,0 +1,342 @@
+<div class="vote-container">
+  <!-- Success Message -->
+  @if (voteSubmitted) {
+  <div class="success-message">
+    <div class="success-icon">🎉</div>
+    <h2>Vote Submitted Successfully!</h2>
+    <p>Thank you for participating in the election.</p>
+    <div class="success-actions">
+      <button class="btn-primary" (click)="viewResults()">View Results</button>
+      <button class="btn-outline" (click)="backToElections()">Back to Elections</button>
+    </div>
+  </div>
+  }
+
+  <!-- Main Content -->
+  @if (!voteSubmitted) {
+  <div class="vote-content">
+    <!-- Header -->
+    <div class="vote-header">
+      <button class="back-btn" (click)="backToElections()">
+        ← Back
+      </button>
+      <div class="header-content">
+        <h1>Cast Your Vote</h1>
+        <p>Select your preferred candidate and submit your vote</p>
+      </div>
+    </div>
+
+    <!-- System Status -->
+    @if (systemInfo) {
+    <div class="system-status" 
+         [class.registration]="isRegistrationPhase"
+         [class.voting]="isVotingPhase"
+         [class.ended]="isElectionEnded">
+      <div class="status-icon">
+        @if (isRegistrationPhase) {📝}
+        @if (isVotingPhase) {✅}
+        @if (isElectionEnded) {⛔}
+      </div>
+      <div class="status-info">
+        <h4>Election Status: {{ systemInfo.state.stateName }}</h4>
+        <p>State: {{ getStateDescription(systemInfo.state.state) }} | 
+           Candidates: {{ systemInfo.contestantsCount }}</p>
+      </div>
+    </div>
+    }
+
+    <!-- Wallet Section -->
+    <div class="wallet-section">
+      @if (!isWalletConnected) {
+      <div class="wallet-not-connected">
+        <div class="wallet-card">
+          <div class="wallet-icon">👛</div>
+          <h3>Connect Wallet</h3>
+          <p>Connect your MetaMask wallet to participate</p>
+          <button class="btn-wallet" (click)="connectWallet()">
+            Connect MetaMask
+          </button>
+        </div>
+      </div>
+      }
+
+      @if (isWalletConnected && walletAddress) {
+      <div class="wallet-connected">
+        <div class="wallet-info">
+          <div class="wallet-header">
+            <div class="wallet-icon connected">✅</div>
+            <div>
+              <h4>Wallet Connected</h4>
+              <p class="wallet-address">{{ walletAddress | slice:0:6 }}...{{ walletAddress | slice:-4 }}</p>
+            </div>
+          </div>
+          
+          <div class="voter-status">
+            <div class="status-badge" [class.success]="isVoterRegistered" [class.warning]="!isVoterRegistered">
+              {{ isVoterRegistered ? 'Registered' : 'Not Registered' }}
+            </div>
+            <div class="status-badge" 
+                 [class.info]="!hasVoted && isVotingPhase"
+                 [class.success]="hasVoted && isVotingPhase"
+                 [class.secondary]="!isVotingPhase">
+              {{ hasVoted ? 'Voted' : 
+                 (isVotingPhase ? 'Can Vote' : 'Cannot Vote Now') }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Registration Phase Actions -->
+        @if (isRegistrationPhase && !isVoterRegistered) {
+        <div class="registration-section">
+          <p>Registration is open. Register now to vote when voting starts.</p>
+          <button class="btn-register" (click)="registerVoter()" [disabled]="isRegistering">
+            @if (isRegistering) {
+              <div class="spinner small"></div>
+              Registering...
+            } @else {
+              Register as Voter
+            }
+          </button>
+        </div>
+        }
+
+        @if (isRegistrationPhase && isVoterRegistered) {
+        <div class="info-card success">
+          <div class="info-icon">✅</div>
+          <div>
+            <h5>Registration Complete</h5>
+            <p>You are registered and ready to vote when voting starts.</p>
+          </div>
+        </div>
+        }
+
+        <!-- Voting Phase - Already Voted -->
+        @if (isVotingPhase && hasVoted) {
+        <div class="already-voted">
+          <div class="info-card">
+            <div class="info-icon">✅</div>
+            <div>
+              <h5>Already Voted</h5>
+              <p>Thank you for participating in the election</p>
+            </div>
+          </div>
+          <button class="btn-view-results" (click)="viewResults()">
+            View Results
+          </button>
+        </div>
+        }
+      </div>
+      }
+    </div>
+
+    <!-- Candidates Section - Show only in Voting Phase -->
+    @if (isVotingPhase && isVoterRegistered && !hasVoted && isWalletConnected) {
+    <div class="candidates-section">
+      <!-- Search -->
+      <div class="search-section">
+        <div class="search-box">
+          <input 
+            type="text" 
+            placeholder="Search candidates..." 
+            [value]="searchTerm"
+            (input)="onSearchChange($event)"
+            class="search-input"
+          >
+          @if (searchTerm) {
+          <button class="clear-search" (click)="clearSearch()">×</button>
+          }
+        </div>
+        <div class="candidate-count">
+          {{ filteredCandidates.length }} candidates
+        </div>
+      </div>
+
+      <!-- Candidates List -->
+      @if (filteredCandidates.length > 0) {
+      <div class="candidates-grid">
+        @for (candidate of filteredCandidates; track candidate.id) {
+        <div 
+          class="candidate-card"
+          [class.selected]="candidate.selected"
+          (click)="selectCandidate(candidate.id)"
+        >
+          <!-- Candidate Avatar -->
+          <div class="candidate-avatar" [style.background-color]="getAvatarColor(candidate.id)">
+            {{ candidate.name.charAt(0) }}
+          </div>
+
+          <!-- Candidate Info -->
+          <div class="candidate-info">
+            <h3 class="candidate-name">{{ candidate.name }}</h3>
+            <div class="candidate-party">{{ candidate.party }}</div>
+            
+            <div class="candidate-stats">
+              <div class="stat">
+                <span class="stat-label">Age:</span>
+                <span class="stat-value">{{ candidate.age }}</span>
+              </div>
+              <div class="stat">
+                <span class="stat-label">Qualification:</span>
+                <span class="stat-value">{{ candidate.qualification }}</span>
+              </div>
+            </div>
+
+            <!-- Votes -->
+            <div class="votes-section">
+              <div class="votes-count">
+                <span class="votes-number">{{ candidate.voteCount }}</span>
+                <span class="votes-label">votes</span>
+              </div>
+              @if (candidate.percentage && candidate.percentage > 0) {
+              <div class="votes-percentage">
+                <div class="progress-bar">
+                  <div class="progress-fill" [style.width]="candidate.percentage + '%'"></div>
+                </div>
+                <span class="percentage">{{ candidate.percentage }}%</span>
+              </div>
+              }
+            </div>
+          </div>
+
+          <!-- Selection Indicator -->
+          @if (candidate.selected) {
+          <div class="selected-indicator">✓</div>
+          }
+        </div>
+        }
+      </div>
+      }
+
+      <!-- No Results -->
+      @if (filteredCandidates.length === 0 && candidates.length > 0) {
+      <div class="no-results">
+        <div class="no-results-icon">🔍</div>
+        <h3>No candidates found</h3>
+        <p>Try a different search term</p>
+        <button class="btn-clear" (click)="clearSearch()">
+          Clear Search
+        </button>
+      </div>
+      }
+    </div>
+    }
+
+    <!-- Phase Messages -->
+    @if (isRegistrationPhase && !isVoterRegistered) {
+    <div class="phase-message registration">
+      <div class="phase-icon">📝</div>
+      <h3>Registration Phase</h3>
+      <p>Register now to participate in the upcoming election. Voting will begin after registration ends.</p>
+    </div>
+    }
+
+    @if (isRegistrationPhase && isVoterRegistered) {
+    <div class="phase-message success">
+      <div class="phase-icon">✅</div>
+      <h3>Registration Complete</h3>
+      <p>You are successfully registered. Please wait for the voting phase to begin.</p>
+    </div>
+    }
+
+    @if (isElectionEnded) {
+    <div class="phase-message ended">
+      <div class="phase-icon">⛔</div>
+      <h3>Election Has Ended</h3>
+      <p>The election is currently in {{ systemInfo?.state?.stateName }} state. Voting is closed.</p>
+      <button class="btn-view-results" (click)="viewResults()">
+        View Election Results
+      </button>
+    </div>
+    }
+
+    <!-- Private Key Input - Only in Voting Phase -->
+    @if (isVotingPhase && selectedCandidateId && !showPrivateKeyInput) {
+    <div class="private-key-prompt">
+      <p>You have selected a candidate. Click "Enter Private Key" to proceed with voting.</p>
+      <button class="btn-show-key" (click)="togglePrivateKeyInput()">
+        Enter Private Key
+      </button>
+    </div>
+    }
+
+    @if (isVotingPhase && showPrivateKeyInput) {
+    <div class="private-key-input">
+      <h4>Enter Private Key</h4>
+      <p class="key-warning">
+        ⚠️ Your private key is required to sign the transaction. 
+        It will not be stored and is only used for this transaction.
+      </p>
+      <div class="key-input-group">
+        <input 
+          type="password" 
+          placeholder="Enter your MetaMask private key (0x...)" 
+          [(ngModel)]="privateKey"
+          class="key-input"
+        />
+        <button class="btn-hide-key" (click)="togglePrivateKeyInput()">
+          Cancel
+        </button>
+      </div>
+      <p class="key-note">
+        Note: Your private key starts with "0x" and is 64 characters long.
+      </p>
+    </div>
+    }
+
+    <!-- Voting Button - Only in Voting Phase -->
+    @if (isVotingPhase && isVoterRegistered && !hasVoted && isWalletConnected) {
+    <div class="vote-action-section">
+      <button
+        class="btn-vote"
+        [class.disabled]="!selectedCandidateId || !privateKey.trim()"
+        [class.loading]="isSubmitting"
+        (click)="submitVote()"
+        [disabled]="!selectedCandidateId || !privateKey.trim() || isSubmitting || hasVoted"
+      >
+        @if (isSubmitting) {
+        <div class="spinner"></div>
+        Submitting Vote...
+        } @else {
+        Submit Vote
+        }
+      </button>
+      
+      @if (!selectedCandidateId) {
+      <p class="vote-hint">Please select a candidate to vote</p>
+      }
+      
+      @if (selectedCandidateId && !privateKey.trim()) {
+      <p class="vote-hint">Please enter your private key to vote</p>
+      }
+      
+      @if (selectedCandidateId && privateKey.trim()) {
+      <p class="vote-warning">
+        ⚠️ This action is permanent and cannot be undone
+      </p>
+      }
+    </div>
+    }
+
+    <!-- Statistics -->
+    @if (candidates.length > 0 && (isVotingPhase || isElectionEnded)) {
+    <div class="stats-section">
+      <h3>Election Stats</h3>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">{{ candidates.length }}</div>
+          <div class="stat-label">Candidates</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">{{ totalVotes }}</div>
+          <div class="stat-label">Total Votes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">{{ systemInfo?.state?.stateName || 'Loading...' }}</div>
+          <div class="stat-label">Status</div>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+  }
+</div>

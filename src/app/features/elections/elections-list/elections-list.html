@@ -1,118 +1,360 @@
 <div class="election-list-container">
-    <div class="election-list-container">
-  <!-- عنوان الصفحة -->
+  <!-- Page Header -->
   <div class="page-header">
-    <h1>الانتخابات</h1>
-    <p>استعرض الانتخابات الجارية والقادمة وشارك في صنع القرار</p>
+    <h1>Elections</h1>
+    <p>Main | Blockchain Elections</p>
   </div>
 
-  <!-- فلاتر الانتخابات -->
-  <div class="filter-section">
-    <div class="filter-buttons">
-      <button 
-        [class.active]="selectedStatus === 'all'" 
-        (click)="filterElections('all')"
-        class="filter-btn"
-      >
-        جميع الانتخابات
-      </button>
-      <button 
-        [class.active]="selectedStatus === 'active'" 
-        (click)="filterElections('active')"
-        class="filter-btn"
-      >
-        الانتخابات النشطة
-      </button>
-      <button 
-        [class.active]="selectedStatus === 'completed'" 
-        (click)="filterElections('completed')"
-        class="filter-btn"
-      >
-        الانتخابات المنتهية
-      </button>
+  <!-- Wallet Connection Info -->
+  <div class="wallet-info-section">
+    @if (!isWalletConnected) {
+    <div class="wallet-not-connected">
+      <div class="wallet-card">
+        <div class="wallet-icon">👛</div>
+        <div class="wallet-content">
+          <h3>Connect Your Wallet</h3>
+          <p>Connect your MetaMask wallet to participate in the election</p>
+          <button class="btn-wallet-connect" (click)="connectWallet()">
+            Connect MetaMask
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
+    }
 
-  <!-- شبكة الانتخابات -->
-  <div class="elections-grid">
-    @for (election of filteredElections; track election.electionId) {
-      <div class="election-card">
-        <!-- حالة الانتخابات بدون صورة -->
-        <div class="election-header">
-          <div class="election-status" [class]="getStatusClass(election.status)">
-            {{ getStatusText(election.status) }}
+    @if (isWalletConnected && walletAddress) {
+    <div class="wallet-connected">
+      <div class="connected-card">
+        <div class="wallet-header">
+          <div class="wallet-icon connected">✅</div>
+          <div class="wallet-info">
+            <h4>Wallet Connected</h4>
+            <div class="wallet-address-display">
+              <span class="address">{{ formatWalletAddress(walletAddress) }}</span>
+            </div>
           </div>
         </div>
 
-        <!-- محتوى البطاقة -->
-        <div class="election-content" >
-          <h3 class="election-title">{{ election.electionName }}</h3>
-          <p class="election-description">{{ election.description }}</p>
-          
-          <!-- معلومات الانتخابات -->
-          <div class="election-info">
-            <div class="info-item">
-              <i class="icon-calendar"></i>
-              <span class="info-label">تاريخ البدء:</span>
-              <span class="info-value">{{ formatDate(election.startDate) }}</span>
-            </div>
-            <div class="info-item">
-              <i class="icon-calendar"></i>
-              <span class="info-label">تاريخ الانتهاء:</span>
-              <span class="info-value">{{ formatDate(election.endDate) }}</span>
-            </div>
-            <div class="info-item">
-              <i class="icon-users"></i>
-              <span class="info-label">عدد المرشحين:</span>
-              <span class="info-value">{{ election.candidatesCount }}</span>
-            </div>
-            <div class="info-item" *ngIf="election.status">
-              <i class="icon-clock"></i>
-              <span class="info-label">متبقي:</span>
-              <span class="info-value highlight">{{ getDaysRemaining(election.endDate) }}</span>
-            </div>
-          </div>
-
-          <!-- أزرار الإجراءات -->
-          <div class="election-actions">
-            <button 
-              *ngIf="canVote(election)" 
-              class="btn-vote"
-              (click)="voteForElection(election.electionId)"
-            >
-              <i class="icon-vote"></i>
-              التصويت الآن
-            </button>
-            
-            <button 
-              *ngIf="!election.status" 
-              class="btn-results"
-              (click)="viewResults(election.electionId)"
-            >
-              <i class="icon-chart"></i>
-              عرض النتائج
-            </button>
-            
-            <button [routerLink]="[election.electionId,'candidates-list']"
-              class="btn-candidates"
-            >
-              <i class="icon-users"></i>
-              عرض المرشحين
-            </button>
+        <!-- Voter Status -->
+        <div class="voter-status">
+          <div class="status-item">
+            <span class="status-label">Voter Status:</span>
+            @if (isCheckingVoterStatus) {
+            <span class="status-value checking">
+              <span class="spinner-small"></span>
+              Checking...
+            </span>
+            } @else if (isVoterRegistered) {
+            <span class="status-value registered">✅ Registered</span>
+            } @else {
+            <span class="status-value not-registered">Not Registered</span>
+            }
           </div>
         </div>
       </div>
+    </div>
     }
   </div>
 
-  <!-- حالة عدم وجود انتخابات -->
-  @if (filteredElections.length === 0) {
-    <div class="no-elections">
-      <div class="empty-state">
-        <i class="icon-election"></i>
-        <h3>لا توجد انتخابات حالياً</h3>
-        <p>لا توجد انتخابات متاحة للعرض حسب الفلتر المحدد</p>
+  <!-- Loading State -->
+  @if (isLoading) {
+  <div class="loading-section">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p>Loading election data...</p>
+  </div>
+  }
+
+  <!-- Elections Grid -->
+  @if (!isLoading && mainElection) {
+  <div class="elections-grid">
+    <div class="election-card">
+      <!-- Election Status -->
+      <div class="election-header">
+        <div class="election-status" [class]="getStatusClass(electionState)">
+          {{ getStatusText(electionState) }}
+        </div>
+      </div>
+
+      <!-- Card Content -->
+      <div class="election-content">
+        <h3 class="election-title">{{ mainElection.electionName }}</h3>
+        <p class="election-description">{{ mainElection.description }}</p>
+        
+        <!-- State Information -->
+        <div class="state-info">
+          <div class="state-icon" [class]="'state-' + electionState">
+            @if (electionState === 0) {📝}
+            @if (electionState === 1) {🗳️}
+            @if (electionState === 2) {🏆}
+          </div>
+          <div class="state-details">
+            <h4>{{ getStateText(electionState) }}</h4>
+            <p>{{ getStateDescription(electionState) }}</p>
+          </div>
+        </div>
+        
+        <!-- Election Info -->
+        <div class="election-info">
+          <div class="info-item">
+            <i class="fa-regular fa-calendar icon-calendar"></i>
+            <span class="info-label">Start Date:</span>
+            <span class="info-value">{{ formatDate(mainElection.startDate) }}</span>
+          </div>
+          <div class="info-item">
+            <i class="fa-regular fa-calendar icon-calendar"></i>
+            <span class="info-label">End Date:</span>
+            <span class="info-value">{{ formatDate(mainElection.endDate) }}</span>
+          </div>
+          <div class="info-item">
+            <i class="fa-solid fa-users icon-users"></i>
+            <span class="info-label">Candidates:</span>
+            <span class="info-value">{{ mainElection.candidatesCount }}</span>
+          </div>
+          <div class="info-item">
+            <i class="fa-solid fa-clock icon-clock"></i>
+            <span class="info-label">Time Left:</span>
+            <span class="info-value highlight">{{ getDaysRemaining(mainElection.endDate) }}</span>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="election-actions">
+          <!-- Registration State (0) -->
+          @if (electionState === 0) {
+          <button 
+            class="btn-register" 
+            [class]="getRegisterButtonClass()"
+            (click)="goToRegistration()" 
+            [disabled]="isRegisterButtonDisabled()"
+          >
+            @if (isCheckingVoterStatus) {
+            <span class="spinner-small"></span>
+            } @else if (isVoterRegistered) {
+            <i class="fa-solid fa-check-circle"></i>
+            } @else {
+            <i class="fa-solid fa-user-plus"></i>
+            }
+            {{ getRegisterButtonText() }}
+          </button>
+          }
+          
+          <!-- Voting State (1) -->
+          @if (electionState === 1) {
+          <button 
+            class="btn-vote" 
+            [class]="getVoteButtonClass()"
+            (click)="goToVote()" 
+            [disabled]="isVoteButtonDisabled()"
+          >
+            @if (isCheckingVoterStatus) {
+            <span class="spinner-small"></span>
+            } @else if (!isVoterRegistered) {
+            <i class="fa-solid fa-ban"></i>
+            } @else {
+            <i class="fa-solid fa-vote-yea"></i>
+            }
+            {{ getVoteButtonText() }}
+          </button>
+          }
+          
+          <!-- Show Candidates Button (Always visible except in state 2) -->
+          @if (electionState !== 2) {
+          <button class="btn-candidates" (click)="viewCandidates()">
+            <i class="fa-solid fa-users icon-users"></i>
+            View Candidates
+          </button>
+          }
+        </div>
+
+        <!-- Registration/Voting Status Message -->
+        <div class="status-message">
+          @if (electionState === 0 && isVoterRegistered) {
+          <div class="message info">
+            <i class="fa-solid fa-info-circle"></i>
+            <span>You are already registered. You can vote when voting starts.</span>
+          </div>
+          }
+          @if (electionState === 1 && !isVoterRegistered) {
+          <div class="message warning">
+            <i class="fa-solid fa-exclamation-triangle"></i>
+            <span>You need to register as a voter before you can vote.</span>
+          </div>
+          }
+        </div>
       </div>
     </div>
+  </div>
+
+  <!-- Results and Candidates Section (Always shown) -->
+  <div id="results-section" class="results-section">
+    <!-- Only show winner in state 2 -->
+    @if (electionState === 2 && winner) {
+    <div class="winner-section">
+      <div class="winner-header">
+        <h2><i class="fa-solid fa-crown"></i> Election Winner</h2>
+      </div>
+      <div class="winner-card">
+        <div class="winner-badge">🏆 Winner</div>
+        <div class="winner-info">
+          <h3>{{ winner.name }}</h3>
+          <div class="winner-stats">
+            <div class="stat">
+              <span class="stat-label">Votes:</span>
+              <span class="stat-value">{{ winner.voteCount }}</span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Percentage:</span>
+              <span class="stat-value">
+                {{ ((winner.voteCount / totalVotes) * 100).toFixed(1) }}%
+              </span>
+            </div>
+            <div class="stat">
+              <span class="stat-label">Party:</span>
+              <span class="stat-value">{{ winner.party }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Candidates Table (Always shown) -->
+    <div class="results-table-section">
+      <h2><i class="fa-solid fa-ranking-star"></i> 
+        @if (electionState === 2) {Election Results}
+        @else {Candidates List}
+      </h2>
+      
+      @if (candidates.length > 0) {
+      <div class="results-table">
+        <!-- Table Header -->
+        <div class="table-header">
+          <div class="table-row">
+            <div class="table-cell rank">Rank</div>
+            <div class="table-cell">Candidate</div>
+            <div class="table-cell">Party</div>
+            <div class="table-cell">Votes</div>
+            <div class="table-cell">Percentage</div>
+            <div class="table-cell">Progress</div>
+          </div>
+        </div>
+        
+        <!-- Table Body -->
+        <div class="table-body">
+          @for (candidate of candidates; track candidate.id; let i = $index) {
+          <div class="table-row">
+            <!-- Rank with Medal -->
+            <div class="table-cell rank">
+              <span class="medal-icon">{{ getMedalIcon(i) }}</span>
+              <span class="rank-number">{{ i + 1 }}</span>
+            </div>
+            
+            <!-- Candidate Info -->
+            <div class="table-cell candidate-info">
+              <div class="candidate-name">{{ candidate.name }}</div>
+              <div class="candidate-details">
+                <span class="detail">{{ candidate.age }} years</span>
+                <span class="detail">•</span>
+                <span class="detail">{{ candidate.qualification }}</span>
+              </div>
+            </div>
+            
+            <!-- Party -->
+            <div class="table-cell">
+              <span class="party-badge">{{ candidate.party }}</span>
+            </div>
+            
+            <!-- Vote Count -->
+            <div class="table-cell">
+              <span class="vote-count">{{ candidate.voteCount }}</span>
+            </div>
+            
+            <!-- Percentage -->
+            <div class="table-cell">
+              <span class="percentage">{{ candidate.percentage }}%</span>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="table-cell">
+              <div class="progress-bar-container">
+                <div class="progress-bar" 
+                     [style.width]="candidate.percentage + '%'"
+                     [style.background-color]="getRankColor(i)">
+                </div>
+                <span class="progress-text">{{ candidate.percentage }}%</span>
+              </div>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      } @else {
+      <div class="no-candidates">
+        <i class="fa-solid fa-users-slash"></i>
+        <h3>No candidates available</h3>
+        <p>There are no candidates registered for this election yet.</p>
+      </div>
+      }
+    </div>
+
+    <!-- Statistics (Always shown) -->
+    <div class="stats-section">
+      <h2><i class="fa-solid fa-chart-pie"></i> Election Statistics</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ mainElection.candidatesCount }}</h3>
+            <p>Total Candidates</p>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fa-solid fa-vote-yea"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ totalVotes }}</h3>
+            <p>Total Votes</p>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fa-solid fa-percentage"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ totalVotes > 0 ? ((winner?.voteCount / totalVotes) * 100).toFixed(1) : 0 }}%</h3>
+            <p>Winner Percentage</p>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon">
+            <i class="fa-solid fa-calculator"></i>
+          </div>
+          <div class="stat-content">
+            <h3>{{ electionState === 2 ? 'Completed' : getStatusText(electionState) }}</h3>
+            <p>Current Status</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- No Elections State -->
+  @if (!isLoading && !mainElection) {
+  <div class="no-elections">
+    <div class="empty-state">
+      <i class="fa-solid fa-calendar-xmark icon-election"></i>
+      <h3>No Elections Available</h3>
+      <p>There are no elections available at the moment</p>
+    </div>
+  </div>
   }
 </div>

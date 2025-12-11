@@ -1,214 +1,235 @@
-body {
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
+/* ========== MAIN CONTAINER ========== */
 .election-list-container {
-  min-height: 100vh;
-  padding: 100px 20px 40px;
-  direction: rtl;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: 'Inter', sans-serif;
 }
 
-/* عنوان الصفحة */
+/* ========== PAGE HEADER ========== */
 .page-header {
   text-align: center;
-  margin-bottom: 40px;
-  padding: 0 20px;
+  margin-bottom: 3rem;
 }
 
 .page-header h1 {
-  font-size: 2.5rem;
   color: #2c3e50;
-  margin-bottom: 15px;
-  font-weight: 800;
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
 }
 
 .page-header p {
+  color: #7f8c8d;
   font-size: 1.1rem;
-  color: #666;
-  max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.6;
 }
 
-/* قسم الفلاتر */
-.filter-section {
-  background: white;
-  padding: 20px;
-  border-radius: 15px;
-  margin-bottom: 30px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
+/* ========== LOADING STATE ========== */
+.loading-section {
+  text-align: center;
+  padding: 4rem;
 }
 
-.filter-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
-.filter-btn {
-  padding: 12px 25px;
-  border: 2px solid #e9ecef;
-  background: white;
-  color: #495057;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.filter-btn:hover {
-  border-color: #3498db;
+.loading-section p {
+  margin-top: 1rem;
+  font-size: 1.1rem;
   color: #3498db;
 }
 
-.filter-btn.active {
-  background: #3498db;
-  color: white;
-  border-color: #3498db;
-}
-
-/* شبكة الانتخابات */
+/* ========== ELECTIONS GRID ========== */
 .elections-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 25px;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
 }
 
-/* بطاقة الانتخابات */
 .election-card {
   background: white;
-  border-radius: 20px;
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
   overflow: hidden;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease;
 }
 
 .election-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
 }
 
-/* هيدر البطاقة */
+/* ========== ELECTION HEADER & STATUS ========== */
 .election-header {
-  padding: 15px;
-  display: flex;
-  justify-content: flex-end;
+  padding: 1rem;
   background: #f8f9fa;
+  border-bottom: 1px solid #eee;
 }
 
 .election-status {
-  padding: 8px 15px;
+  display: inline-block;
+  padding: 0.5rem 1.5rem;
   border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 700;
+  font-size: 0.9rem;
+  font-weight: bold;
 }
 
-.status-active {
-  background: #e8f5e9;
-  color: #2e7d32;
+/* Status Classes for Three States */
+.status-registration {
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+  color: white;
 }
 
-.status-completed {
-  background: #f5f5f5;
-  color: #757575;
+.status-voting {
+  background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+  color: white;
 }
 
-/* محتوى البطاقة */
+.status-results {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
+}
+
+/* ========== ELECTION CONTENT ========== */
 .election-content {
-  padding: 25px;
+  padding: 1.5rem;
 }
 
 .election-title {
-  font-size: 1.4rem;
   color: #2c3e50;
-  margin-bottom: 12px;
-  font-weight: 700;
-  line-height: 1.4;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
 }
 
 .election-description {
-  color: #666;
+  color: #7f8c8d;
+  margin-bottom: 1.5rem;
   line-height: 1.6;
-  margin-bottom: 20px;
+}
+
+/* ========== STATE INFORMATION ========== */
+.state-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 10px;
+  margin: 1.5rem 0;
+  border-left: 4px solid #17a2b8;
+}
+
+.state-icon {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  border-radius: 50%;
+  background: white;
+  flex-shrink: 0;
+}
+
+.state-0 .state-icon {
+  background: #e7f3ff;
+  color: #17a2b8;
+}
+
+.state-1 .state-icon {
+  background: #e8f5e9;
+  color: #28a745;
+}
+
+.state-2 .state-icon {
+  background: #ffeaea;
+  color: #dc3545;
+}
+
+.state-details h4 {
+  margin: 0;
+  color: #212529;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.state-details p {
+  margin: 0.25rem 0 0 0;
+  color: #6c757d;
   font-size: 0.95rem;
 }
 
-/* معلومات الانتخابات */
+/* ========== ELECTION INFO ========== */
 .election-info {
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 25px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .info-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #e9ecef;
+  gap: 0.5rem;
 }
 
-.info-item:last-child {
-  margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom: none;
+.info-item i {
+  color: #3498db;
+  font-size: 1.1rem;
+  width: 20px;
+  flex-shrink: 0;
 }
 
 .info-label {
-  color: #495057;
-  font-weight: 600;
+  color: #7f8c8d;
   font-size: 0.9rem;
+  min-width: 100px;
 }
 
 .info-value {
   color: #2c3e50;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .info-value.highlight {
   color: #e74c3c;
+  font-weight: bold;
 }
 
-/* أزرار الإجراءات */
+/* ========== ACTION BUTTONS ========== */
 .election-actions {
   display: flex;
-  gap: 12px;
+  gap: 1rem;
   flex-wrap: wrap;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eee;
 }
 
 .election-actions button {
-  flex: 1;
-  min-width: 120px;
-  padding: 12px 20px;
-  border: none;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 0.9rem;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.election-actions button i {
-  margin-left: 5px;
+/* Registration Button */
+.btn-register {
+  background: #17a2b8;
+  color: white;
 }
 
+.btn-register:hover {
+  background: #138496;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(23, 162, 184, 0.2);
+}
+
+/* Vote Button */
 .btn-vote {
   background: #2ecc71;
   color: white;
@@ -217,98 +238,372 @@ body {
 .btn-vote:hover {
   background: #27ae60;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
 }
 
-.btn-results {
-  background: #3498db;
-  color: white;
-}
-
-.btn-results:hover {
-  background: #2980b9;
-  transform: translateY(-2px);
-}
-
+/* Candidates Button */
 .btn-candidates {
-  background: transparent;
-  color: #3498db;
-  border: 2px solid #3498db !important;
+  background: #f39c12;
+  color: white;
 }
 
 .btn-candidates:hover {
-  background: #3498db;
-  color: white;
+  background: #d35400;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(243, 156, 18, 0.2);
 }
 
-/* حالة عدم وجود انتخابات */
+/* ========== RESULTS SECTION ========== */
+.results-section {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid #eee;
+}
+
+/* Winner Section */
+.winner-section {
+  margin-bottom: 3rem;
+}
+
+.winner-header {
+  margin-bottom: 1.5rem;
+}
+
+.winner-header h2 {
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.8rem;
+}
+
+.winner-card {
+  background: linear-gradient(135deg, #FFD700 0%, #FFEC8B 100%);
+  border-radius: 15px;
+  padding: 2rem;
+  position: relative;
+  text-align: center;
+}
+
+.winner-badge {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #e74c3c;
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.winner-info h3 {
+  font-size: 2rem;
+  color: #2c3e50;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.winner-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.stat {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 1rem;
+  border-radius: 10px;
+}
+
+.stat-label {
+  display: block;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.stat-value {
+  display: block;
+  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* ========== RESULTS TABLE ========== */
+.results-table-section {
+  margin-bottom: 3rem;
+}
+
+.results-table-section h2 {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.results-table {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+}
+
+.table-header {
+  background: #3498db;
+  color: white;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 150px 100px 100px 1fr;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.table-header .table-row {
+  font-weight: bold;
+}
+
+.table-cell {
+  padding: 0.5rem;
+}
+
+.rank {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: bold;
+}
+
+.medal-icon {
+  font-size: 1.2rem;
+}
+
+.rank-number {
+  background: #f8f9fa;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.candidate-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.candidate-name {
+  font-weight: bold;
+  color: #2c3e50;
+  font-size: 1.1rem;
+}
+
+.candidate-details {
+  display: flex;
+  gap: 0.5rem;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+.party-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: #f1f2f6;
+  color: #2c3e50;
+  border-radius: 15px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.vote-count {
+  font-weight: bold;
+  color: #2c3e50;
+  font-size: 1.1rem;
+}
+
+.percentage {
+  font-weight: bold;
+  color: #3498db;
+  font-size: 1.1rem;
+}
+
+.progress-bar-container {
+  position: relative;
+  height: 25px;
+  background: #f1f2f6;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 12px;
+  transition: width 0.5s ease;
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+}
+
+.progress-text {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+  font-weight: bold;
+  font-size: 0.8rem;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
+}
+
+/* ========== NO CANDIDATES ========== */
+.no-candidates {
+  text-align: center;
+  padding: 3rem;
+  background: #f8f9fa;
+  border-radius: 10px;
+  margin: 2rem 0;
+}
+
+.no-candidates i {
+  font-size: 4rem;
+  color: #adb5bd;
+  margin-bottom: 1rem;
+}
+
+.no-candidates h3 {
+  color: #6c757d;
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.no-candidates p {
+  color: #868e96;
+  font-size: 1rem;
+}
+
+/* ========== STATISTICS ========== */
+.stats-section {
+  margin-top: 3rem;
+}
+
+.stats-section h2 {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 10px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+.stat-icon {
+  width: 60px;
+  height: 60px;
+  background: #3498db;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.stat-content h3 {
+  font-size: 1.8rem;
+  color: #2c3e50;
+  margin: 0;
+  font-weight: 700;
+}
+
+.stat-content p {
+  color: #7f8c8d;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* ========== NO ELECTIONS ========== */
 .no-elections {
   text-align: center;
-  padding: 60px 20px;
-  background: white;
-  border-radius: 20px;
-  max-width: 600px;
-  margin: 0 auto;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+  padding: 4rem 2rem;
+}
+
+.empty-state {
+  display: inline-block;
+}
+
+.empty-state .icon-election {
+  font-size: 4rem;
+  color: #bdc3c7;
+  margin-bottom: 1rem;
 }
 
 .empty-state h3 {
   color: #2c3e50;
-  margin-bottom: 15px;
+  margin-bottom: 0.5rem;
   font-size: 1.5rem;
 }
 
 .empty-state p {
-  color: #666;
-  font-size: 1.1rem;
+  color: #7f8c8d;
+  font-size: 1rem;
 }
 
-.empty-state i {
-  font-size: 64px;
-  color: #bdc3c7;
-  margin-bottom: 20px;
-  display: block;
-}
-
-/* أيقونات */
-.icon-calendar:before { content: "📅"; }
-.icon-users:before { content: "👥"; }
-.icon-clock:before { content: "⏱️"; }
-.icon-vote:before { content: "✅"; }
-.icon-chart:before { content: "📊"; }
-.icon-election:before { content: "🗳️"; }
-
-/* التصميم المتجاوب */
+/* ========== RESPONSIVE DESIGN ========== */
 @media (max-width: 768px) {
-  .election-list-container {
-    padding: 80px 15px 30px;
-  }
-  
   .page-header h1 {
     font-size: 2rem;
   }
   
-  .filter-buttons {
-    gap: 10px;
-  }
-  
-  .filter-btn {
-    padding: 10px 20px;
-    font-size: 0.8rem;
-  }
-  
   .elections-grid {
     grid-template-columns: 1fr;
-    gap: 20px;
-    padding: 0 15px;
   }
   
-  .election-content {
-    padding: 20px;
+  .state-info {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
   }
   
-  .election-title {
-    font-size: 1.2rem;
+  .election-info {
+    grid-template-columns: 1fr;
+  }
+  
+  .table-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+  
+  .winner-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
   }
   
   .election-actions {
@@ -317,30 +612,231 @@ body {
   
   .election-actions button {
     width: 100%;
+    justify-content: center;
   }
 }
 
 @media (max-width: 480px) {
-  .page-header h1 {
-    font-size: 1.8rem;
-  }
-  
-  .page-header p {
-    font-size: 1rem;
-  }
-  
-  .election-info {
-    padding: 15px;
-  }
-  
-  .info-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
+  .results-table {
+    overflow-x: auto;
   }
   
   .election-status {
-    font-size: 0.7rem;
-    padding: 6px 12px;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+  }
+  
+  .winner-info h3 {
+    font-size: 1.5rem;
+  }
+}
+/* ========== WALLET INFO SECTION ========== */
+.wallet-info-section {
+  margin-bottom: 2rem;
+}
+
+.wallet-not-connected .wallet-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border: 2px dashed #e9ecef;
+}
+
+.wallet-icon {
+  font-size: 2.5rem;
+  color: #6c757d;
+}
+
+.wallet-icon.connected {
+  color: #28a745;
+}
+
+.wallet-content h3 {
+  margin: 0 0 0.5rem 0;
+  color: #2c3e50;
+}
+
+.wallet-content p {
+  margin: 0 0 1rem 0;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+.btn-wallet-connect {
+  background: #f6851b;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-wallet-connect:hover {
+  background: #e2761b;
+  transform: translateY(-2px);
+}
+
+.wallet-connected .connected-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border: 2px solid #28a745;
+}
+
+.wallet-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.wallet-info h4 {
+  margin: 0 0 0.25rem 0;
+  color: #2c3e50;
+}
+
+.wallet-address-display .address {
+  font-family: monospace;
+  background: #f8f9fa;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  color: #495057;
+}
+
+.voter-status {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.status-label {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.status-value {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.status-value.checking {
+  background: #d1ecf1;
+  color: #0c5460;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-value.registered {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-value.not-registered {
+  background: #fff3cd;
+  color: #856404;
+}
+
+/* ========== BUTTON STATES ========== */
+.btn-checking {
+  background: #6c757d !important;
+  color: white !important;
+  cursor: not-allowed !important;
+}
+
+.btn-checking:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btn-registered {
+  background: #28a745 !important;
+  color: white !important;
+  cursor: not-allowed !important;
+}
+
+.btn-not-registered {
+  background: #dc3545 !important;
+  color: white !important;
+  cursor: not-allowed !important;
+}
+
+/* ========== STATUS MESSAGE ========== */
+.status-message {
+  margin-top: 1rem;
+}
+
+.status-message .message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.status-message .message.info {
+  background: #d1ecf1;
+  color: #0c5460;
+  border-left: 4px solid #17a2b8;
+}
+
+.status-message .message.warning {
+  background: #fff3cd;
+  color: #856404;
+  border-left: 4px solid #f39c12;
+}
+
+.status-message .message i {
+  font-size: 1.2rem;
+}
+
+/* ========== SPINNER SMALL ========== */
+.spinner-small {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ========== RESPONSIVE UPDATES ========== */
+@media (max-width: 768px) {
+  .wallet-card {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .wallet-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .status-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
 }

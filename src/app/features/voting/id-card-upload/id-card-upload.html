@@ -1,0 +1,350 @@
+<div class="face-capture-container">
+  <div class="verification-card">
+    
+    <!-- Header Section -->
+    <div class="header-section">
+      <div class="step-indicator">
+        <div class="step" [class.active]="currentStep === 1" [class.completed]="isStepComplete(1)">
+          <div class="step-number">1</div>
+          <div class="step-label">Upload ID</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" [class.active]="currentStep === 2" [class.completed]="isStepComplete(2)">
+          <div class="step-number">2</div>
+          <div class="step-label">Take Selfie</div>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" [class.active]="currentStep === 3" [class.completed]="isStepComplete(3)">
+          <div class="step-number">3</div>
+          <div class="step-label">Verify</div>
+        </div>
+      </div>
+      
+      <div class="main-header">
+        <h2>
+          <i [class]="getStepIcon()"></i>
+          {{ getStepTitle() }}
+        </h2>
+        <p class="subtitle">National ID: <strong>{{ nationalId }}</strong> • Voter ID: {{ voterId }}</p>
+      </div>
+    </div>
+
+    <!-- Step 1: ID Card Upload -->
+    <div *ngIf="currentStep === 1" class="step-container step-1">
+      <div class="upload-instructions">
+        <h3><i class="fas fa-upload"></i> Upload Your ID Card</h3>
+        <p>Upload a clear photo of your National ID Card for face comparison</p>
+      </div>
+      
+      <div class="upload-area">
+        <div class="upload-box" [class.has-image]="idCardImage">
+          <input 
+            #fileInput
+            type="file" 
+            id="fileInput"
+            accept="image/*"
+            (change)="onIdCardSelected($event)"
+            style="display: none;"
+          />
+          
+          <div *ngIf="!idCardImage" class="upload-placeholder" (click)="fileInput.click()">
+            <div class="upload-icon">
+              <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <h4>Click to Upload ID Card</h4>
+            <p>Supported: JPG, PNG • Max: 5MB</p>
+            <button type="button" class="upload-btn" (click)="$event.stopPropagation(); fileInput.click()">
+              <i class="fas fa-folder-open"></i>
+              Choose File
+            </button>
+          </div>
+          
+          <div *ngIf="idCardImage" class="upload-preview">
+            <img [src]="idCardImage" alt="ID Card Preview">
+            <div class="preview-overlay">
+              <button type="button" class="btn-change" (click)="fileInput.click(); $event.stopPropagation()">
+                <i class="fas fa-exchange-alt"></i>
+                Change Image
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="upload-guidelines">
+          <h5><i class="fas fa-info-circle"></i> Guidelines:</h5>
+          <ul>
+            <li><i class="fas fa-check"></i> Ensure all text is readable</li>
+            <li><i class="fas fa-check"></i> Photo should be well-lit</li>
+            <li><i class="fas fa-check"></i> Avoid shadows on the ID</li>
+            <li><i class="fas fa-check"></i> Crop to ID boundaries</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="step-actions">
+        <button class="btn-back" (click)="goBack()">
+          <i class="fas fa-arrow-left"></i>
+          Back
+        </button>
+        <button 
+          class="btn-next" 
+          (click)="currentStep = 2" 
+          [disabled]="!idCardImage"
+        >
+          Continue to Selfie
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 2: Selfie Capture -->
+    <div *ngIf="currentStep === 2" class="step-container step-2">
+      <div class="capture-instructions">
+        <h3><i class="fas fa-camera"></i> Take a Selfie</h3>
+        <p>Position your face in the center and ensure good lighting</p>
+      </div>
+      
+      <div class="capture-section">
+        <!-- Camera Preview -->
+        <div *ngIf="showCamera && cameraActive" class="camera-preview">
+          <div class="camera-frame">
+            <video #videoElement autoplay playsinline class="camera-view"></video>
+            <canvas #canvasElement style="display: none;"></canvas>
+            
+            <!-- Countdown Overlay -->
+            <div *ngIf="isCapturing" class="countdown-overlay">
+              <div class="countdown-number">{{ countdown }}</div>
+              <div class="countdown-text">Get Ready!</div>
+            </div>
+            
+            <!-- Face Guide -->
+            <div class="face-guide"></div>
+            
+            <!-- Camera Controls -->
+            <div class="camera-controls">
+              <button 
+                class="btn-capture" 
+                (click)="captureSelfie()" 
+                [disabled]="isCapturing"
+              >
+                <i class="fas fa-camera"></i>
+                {{ isCapturing ? 'Capturing...' : 'Take Selfie' }}
+              </button>
+              
+              <button class="btn-switch" (click)="stopCamera()">
+                <i class="fas fa-times"></i>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Camera Error or Upload Option -->
+        <div *ngIf="!showCamera || !cameraActive" class="capture-options">
+          <div *ngIf="cameraError" class="camera-error">
+            <div class="error-icon">
+              <i class="fas fa-video-slash"></i>
+            </div>
+            <h4>Camera Unavailable</h4>
+            <p>{{ cameraError }}</p>
+          </div>
+          
+          <div class="upload-option" (click)="uploadSelfie()">
+            <div class="option-icon">
+              <i class="fas fa-upload"></i>
+            </div>
+            <div class="option-content">
+              <h4>Upload Selfie Instead</h4>
+              <p>Select a photo from your device</p>
+              <button class="btn-upload">
+                <i class="fas fa-image"></i>
+                Choose Photo
+              </button>
+            </div>
+          </div>
+          
+          <div *ngIf="!cameraError" class="retry-camera" (click)="startCamera()">
+            <i class="fas fa-redo"></i>
+            Retry Camera
+          </div>
+        </div>
+        
+        <!-- ID Card Preview -->
+        <div class="id-card-preview">
+          <h4><i class="fas fa-id-card"></i> ID Card for Comparison</h4>
+          <div class="preview-card">
+            <img *ngIf="idCardImage" [src]="idCardImage" alt="ID Card">
+            <div class="preview-label">
+              <i class="fas fa-check-circle"></i>
+              Ready for Comparison
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="step-actions">
+        <button class="btn-back" (click)="goBack()">
+          <i class="fas fa-arrow-left"></i>
+          Back to ID Upload
+        </button>
+        <button 
+          class="btn-next" 
+          (click)="currentStep = 3" 
+          [disabled]="!faceImage"
+        >
+          Continue to Verification
+          <i class="fas fa-user-check"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 3: Verification Results -->
+    <div *ngIf="currentStep === 3" class="step-container step-3">
+      <div class="verification-header">
+        <h3><i class="fas fa-user-check"></i> Face Comparison Results</h3>
+        <p>Comparing your selfie with ID card photo</p>
+      </div>
+      
+      <div class="comparison-section">
+        <!-- ID Card -->
+        <div class="comparison-item">
+          <div class="comparison-label">
+            <i class="fas fa-id-card"></i>
+            ID Card Photo
+          </div>
+          <div class="comparison-image">
+            <img [src]="idCardImage" alt="ID Card">
+          </div>
+        </div>
+        
+        <!-- Comparison Center -->
+        <div class="comparison-center">
+          <div class="comparison-icon">
+            <i class="fas fa-exchange-alt"></i>
+          </div>
+          <div class="comparison-status" *ngIf="verificationResult">
+            <div class="status-indicator" [class.match]="isMatch" [class.no-match]="!isMatch">
+              {{ isMatch ? 'MATCH' : 'NO MATCH' }}
+            </div>
+            <div class="match-percentage">
+              {{ matchPercentage.toFixed(1) }}%
+            </div>
+          </div>
+        </div>
+        
+        <!-- Selfie -->
+        <div class="comparison-item">
+          <div class="comparison-label">
+            <i class="fas fa-user-circle"></i>
+            Selfie Photo
+          </div>
+          <div class="comparison-image">
+            <img [src]="faceImage" alt="Selfie">
+            <div class="image-actions">
+              <button class="btn-recapture" (click)="retryCapture()">
+                <i class="fas fa-redo"></i>
+                Retake
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Verification Actions -->
+      <div class="verification-actions">
+        <button *ngIf="!verificationResult" 
+                class="btn-verify" 
+                (click)="verifyFaces()" 
+                [disabled]="verifying">
+          <span *ngIf="!verifying">
+            <i class="fas fa-user-check"></i>
+            Verify Faces
+          </span>
+          <span *ngIf="verifying" class="loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            Verifying...
+          </span>
+        </button>
+        
+        <div *ngIf="verificationResult" class="verification-result">
+          <div class="result-card" [class.success]="isMatch" [class.error]="!isMatch">
+            <div class="result-icon">
+              <i *ngIf="isMatch" class="fas fa-check-circle"></i>
+              <i *ngIf="!isMatch" class="fas fa-times-circle"></i>
+            </div>
+            <div class="result-content">
+              <h4>{{ isMatch ? 'Verification Successful!' : 'Verification Failed' }}</h4>
+              <p>{{ verificationResult.message || 
+                  (isMatch ? 'Your face matches the ID card photo.' : 
+                  'Your face does not match the ID card photo.') }}</p>
+              <div class="result-details">
+                <div class="detail-item">
+                  <span class="detail-label">Confidence:</span>
+                  <span class="detail-value">{{ matchPercentage.toFixed(1) }}%</span>
+                </div>
+                <div class="detail-item">
+                  <span class="detail-label">Status:</span>
+                  <span class="detail-value badge" [class.success]="isMatch" [class.error]="!isMatch">
+                    {{ isMatch ? 'Approved' : 'Rejected' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="result-actions">
+            <button class="btn-retry" (click)="retryCapture()" *ngIf="!isMatch">
+              <i class="fas fa-redo"></i>
+              Try Again
+            </button>
+            <button class="btn-complete" (click)="goBack()" *ngIf="!isMatch">
+              <i class="fas fa-arrow-left"></i>
+              Back to Start
+            </button>
+            <div *ngIf="isMatch && successMessage" class="success-message">
+              <i class="fas fa-check-circle"></i>
+              {{ successMessage }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages Section -->
+    <div class="messages-section">
+      <div *ngIf="warningMessage" class="message warning">
+        <i class="fas fa-info-circle"></i>
+        <span>{{ warningMessage }}</span>
+      </div>
+      
+      <div *ngIf="errorMessage" class="message error">
+        <i class="fas fa-exclamation-circle"></i>
+        <span>{{ errorMessage }}</span>
+      </div>
+      
+      <div *ngIf="successMessage && currentStep !== 3" class="message success">
+        <i class="fas fa-check-circle"></i>
+        <span>{{ successMessage }}</span>
+      </div>
+    </div>
+
+    <!-- Progress Info -->
+    <div class="progress-info">
+      <div class="info-item">
+        <i class="fas fa-user-shield"></i>
+        <div class="info-content">
+          <h5>Secure Verification</h5>
+          <p>Your biometric data is encrypted and processed securely</p>
+        </div>
+      </div>
+      <div class="info-item">
+        <i class="fas fa-clock"></i>
+        <div class="info-content">
+          <h5>Quick Process</h5>
+          <p>Verification typically takes less than 10 seconds</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
