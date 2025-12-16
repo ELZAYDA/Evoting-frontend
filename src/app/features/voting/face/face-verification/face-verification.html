@@ -1,0 +1,280 @@
+<div class="face-verification-container">
+  <!-- Header -->
+  <div class="verification-header">
+    <h1><i class="fas fa-user-check"></i> Face Verification</h1>
+    <p class="subtitle">Verify your identity by comparing your ID card photo with a live selfie</p>
+  </div>
+
+  <!-- Progress Steps -->
+  <div class="progress-steps">
+    <div *ngFor="let step of steps" 
+         class="step-item" 
+         [class.completed]="step.completed"
+         [class.active]="step.active">
+      <div class="step-icon">
+        <i class="fas fa-{{step.icon}}"></i>
+      </div>
+      <div class="step-content">
+        <h4>{{step.title}}</h4>
+        <p>{{step.description}}</p>
+      </div>
+      <div class="step-connector" *ngIf="step.step < steps.length"></div>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div *ngIf="successMessage" class="alert alert-success">
+    <i class="fas fa-check-circle"></i> {{successMessage}}
+  </div>
+  
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    <i class="fas fa-exclamation-circle"></i> {{errorMessage}}
+  </div>
+  
+  <div *ngIf="warningMessage" class="alert alert-warning">
+    <i class="fas fa-info-circle"></i> {{warningMessage}}
+  </div>
+
+  <!-- Step 1: ID Card Upload -->
+  <div *ngIf="stateService.getCurrentStep() === 1" class="step-container">
+    <div class="step-content">
+      <div class="upload-area" (click)="fileInput.click()" [class.dragover]="loading">
+        <input #fileInput type="file" accept="image/*" (change)="onIdCardSelected($event)" hidden>
+        
+        <div class="upload-icon">
+          <i class="fas fa-cloud-upload-alt fa-3x"></i>
+        </div>
+        
+        <h3>Upload ID Card Photo</h3>
+        <p class="upload-info">Click to browse or drag & drop your national ID card image</p>
+        
+        <div class="upload-requirements">
+          <p><i class="fas fa-check"></i> Supported formats: JPG, PNG, WebP</p>
+          <p><i class="fas fa-check"></i> Maximum size: 5MB</p>
+          <p><i class="fas fa-check"></i> Clear front side photo</p>
+        </div>
+        
+        <div *ngIf="loading" class="loading-overlay">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p>Processing image...</p>
+        </div>
+      </div>
+
+      <!-- Preview -->
+      <div *ngIf="stateService.getIdCardImage()" class="preview-container">
+        <h4><i class="fas fa-id-card"></i> ID Card Preview</h4>
+        <div class="image-preview">
+          <img [src]="stateService.getIdCardImage()?.previewUrl" alt="ID Card">
+          <div class="image-info">
+            <p><strong>{{stateService.getIdCardImage()?.name}}</strong></p>
+            <p>{{formatFileSize(stateService.getIdCardImage()?.size || 0)}}</p>
+          </div>
+        </div>
+        <button class="btn btn-outline-danger" (click)="stateService.clearIdCardImage()">
+          <i class="fas fa-trash"></i> Remove
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 2: Face Capture -->
+  <div *ngIf="stateService.getCurrentStep() === 2" class="step-container">
+    <div class="step-content">
+      <h3><i class="fas fa-camera"></i> Capture Live Selfie</h3>
+      
+      <!-- Camera View -->
+      <div *ngIf="showCamera && !cameraError" class="camera-container">
+        <div class="camera-view">
+          <video #videoElement autoplay playsinline class="camera-feed"></video>
+          
+          <!-- Face Guide -->
+          <div class="face-guide">
+            <div class="guide-circle"></div>
+            <div class="guide-text">Position your face inside the circle</div>
+          </div>
+          
+          <!-- Countdown -->
+          <div *ngIf="isCapturing" class="countdown-overlay">
+            <div class="countdown-number">{{countdown}}</div>
+            <p>Smile!</p>
+          </div>
+        </div>
+        
+        <div class="camera-controls">
+          <button class="btn btn-primary btn-lg" 
+                  (click)="captureSelfie()" 
+                  [disabled]="!cameraActive || isCapturing">
+            <i class="fas fa-camera"></i> 
+            {{isCapturing ? countdown + '...' : 'Capture Selfie'}}
+          </button>
+          
+          <button class="btn btn-outline-secondary" 
+                  (click)="uploadSelfie()" 
+                  [disabled]="isCapturing">
+            <i class="fas fa-upload"></i> Upload Photo Instead
+          </button>
+          
+          <button *ngIf="cameraActive" class="btn btn-outline-danger" (click)="stopCamera()">
+            <i class="fas fa-video-slash"></i> Stop Camera
+          </button>
+        </div>
+      </div>
+      
+      <!-- Camera Error -->
+      <div *ngIf="cameraError" class="camera-error">
+        <div class="error-icon">
+          <i class="fas fa-video-slash fa-3x"></i>
+        </div>
+        <h4>Camera Unavailable</h4>
+        <p>{{cameraError}}</p>
+        <button class="btn btn-primary" (click)="uploadSelfie()">
+          <i class="fas fa-upload"></i> Upload Photo Instead
+        </button>
+      </div>
+      
+      <!-- Preview -->
+      <div *ngIf="stateService.getFaceImage()" class="preview-container">
+        <h4><i class="fas fa-user-circle"></i> Selfie Preview</h4>
+        <div class="image-preview">
+          <img [src]="stateService.getFaceImage()?.previewUrl" alt="Selfie">
+          <div class="image-info">
+            <p><strong>{{stateService.getFaceImage()?.name}}</strong></p>
+            <p>{{formatFileSize(stateService.getFaceImage()?.size || 0)}}</p>
+          </div>
+        </div>
+        <div class="preview-actions">
+          <button class="btn btn-warning" (click)="retryCapture()">
+            <i class="fas fa-redo"></i> Retake Photo
+          </button>
+          <button class="btn btn-success" 
+                  (click)="verifyFaces()" 
+                  [disabled]="!canProceedToVerification()">
+            <i class="fas fa-check-circle"></i> Proceed to Verification
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step 3: Verification -->
+  <div *ngIf="stateService.getCurrentStep() === 3" class="step-container">
+    <div class="step-content">
+      <h3><i class="fas fa-user-check"></i> Face Verification</h3>
+      
+      <!-- Image Comparison -->
+      <div class="comparison-container">
+        <div class="comparison-images">
+          <div class="comparison-item">
+            <h5><i class="fas fa-id-card"></i> ID Card Photo</h5>
+            <img *ngIf="stateService.getIdCardImage()" 
+                 [src]="stateService.getIdCardImage()?.previewUrl" 
+                 alt="ID Card">
+          </div>
+          
+          <div class="comparison-vs">
+            <div class="vs-circle">VS</div>
+          </div>
+          
+          <div class="comparison-item">
+            <h5><i class="fas fa-user-circle"></i> Selfie Photo</h5>
+            <img *ngIf="stateService.getFaceImage()" 
+                 [src]="stateService.getFaceImage()?.previewUrl" 
+                 alt="Selfie">
+          </div>
+        </div>
+      </div>
+      
+      <!-- Verification Result -->
+      <div *ngIf="verificationResult" class="result-container">
+        <div class="result-card" [class.success]="isMatch" [class.failed]="!isMatch">
+          <div class="result-icon">
+            <i class="fas fa-{{isMatch ? 'check-circle' : 'times-circle'}} fa-3x"></i>
+          </div>
+          <div class="result-content">
+            <h4>{{isMatch ? 'Verification Successful!' : 'Verification Failed'}}</h4>
+            <div class="match-percentage">
+              <div class="percentage-circle" [style.--percentage]="matchPercentage">
+                <span>{{matchPercentage.toFixed(1)}}%</span>
+              </div>
+              <p>Match Confidence</p>
+            </div>
+            <p *ngIf="verificationResult.message" class="result-message">
+              {{verificationResult.message}}
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Verification Actions -->
+      <div class="verification-actions">
+        <button *ngIf="!verificationResult" 
+                class="btn btn-primary btn-lg" 
+                (click)="verifyFaces()" 
+                [disabled]="verifying">
+          <i class="fas fa-play-circle"></i> 
+          {{verifying ? 'Verifying...' : 'Start Verification'}}
+        </button>
+        
+        <button *ngIf="verificationResult && !isMatch" 
+                class="btn btn-warning" 
+                (click)="retryCapture()">
+          <i class="fas fa-redo"></i> Try Again
+        </button>
+        
+        <button class="btn btn-outline-secondary" (click)="goToStep(1)">
+          <i class="fas fa-arrow-left"></i> Back to Start
+        </button>
+        
+        <button *ngIf="verificationResult" 
+                class="btn btn-success" 
+                routerLink="/elections">
+          <i class="fas fa-home"></i> Go to Elections
+        </button>
+      </div>
+      
+      <!-- Loading -->
+      <div *ngIf="verifying" class="verification-loading">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Verifying...</span>
+        </div>
+        <h4>Verifying Faces...</h4>
+        <p>Comparing ID card photo with your selfie</p>
+        <div class="progress">
+          <div class="progress-bar progress-bar-striped progress-bar-animated" 
+               style="width: 85%"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="navigation-actions">
+    <button *ngIf="stateService.getCurrentStep() > 1 && !stateService.getIsVerified()" 
+            class="btn btn-outline-primary" 
+            (click)="goToStep(stateService.getCurrentStep() - 1)">
+      <i class="fas fa-arrow-left"></i> Previous Step
+    </button>
+    
+    <button *ngIf="stateService.getCurrentStep() < 3 && !stateService.getIsVerified()" 
+            class="btn btn-primary" 
+            (click)="goToStep(stateService.getCurrentStep() + 1)"
+            [disabled]="(stateService.getCurrentStep() === 1 && !stateService.getIdCardImage()) ||
+                       (stateService.getCurrentStep() === 2 && !stateService.getFaceImage())">
+      Next Step <i class="fas fa-arrow-right"></i>
+    </button>
+    
+    <button *ngIf="stateService.getIsVerified()" 
+            class="btn btn-success" 
+            routerLink="/elections">
+      <i class="fas fa-check-circle"></i> Go to Elections
+    </button>
+    
+    <button *ngIf="!stateService.getIsVerified()" 
+            class="btn btn-outline-danger" 
+            (click)="restartProcess()">
+      <i class="fas fa-redo"></i> Restart Process
+    </button>
+  </div>
+</div>

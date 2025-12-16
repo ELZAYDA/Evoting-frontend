@@ -1,58 +1,67 @@
 <nav class="navbar">
   <div class="nav-container">
+    <!-- Left Navigation Items -->
     <div class="nav-left">
-      <a routerLink="/" class="nav-link" (click)="isMenuOpen=false">الرئيسية</a>
-      <a routerLink="/elections" class="nav-link" (click)="isMenuOpen=false">الانتخابات</a>
+      <a routerLink="/" class="nav-link" (click)="isMenuOpen=false">Home</a>
+      <a routerLink="/elections" class="nav-link" (click)="isMenuOpen=false">Elections</a>
     </div>
 
+    <!-- Center Logo -->
     <div class="nav-center">
-      <span class="platform-name">منصة الانتخابات</span>
+      <span class="platform-name">vote-x</span>
     </div>
 
+    <!-- Right Navigation Items -->
     <div class="nav-right">
       <ng-container *ngIf="isLoggedIn; else loginBtn">
-        <!-- زر الإعدادات (الترس) يظهر فقط للمسؤولين -->
+        <!-- Settings button for admin only -->
         <button 
           *ngIf="isAdmin" 
           class="settings-btn"
           (click)="navigateToAdminDashboard()"
-          title="لوحة التحكم">
-          ⚙️
+          title="Admin Dashboard">
+          <i class="fas fa-cog"></i>
         </button>
-        <button class="logout-btn" (click)="logout()">تسجيل خروج</button>
+        <button class="logout-btn" (click)="logout()">Logout</button>
       </ng-container>
       <ng-template #loginBtn>
-        <button class="login-btn" (click)="navigateToLogin()">تسجيل دخول</button>
+        <button class="login-btn" (click)="navigateToLogin()">Login</button>
       </ng-template>
     </div>
 
+    <!-- Mobile Menu Toggle -->
     <div class="mobile-menu-toggle">
-      <button (click)="toggleMenu()" class="hamburger">
+      <button class="hamburger"
+  title="Open menu" (click)="toggleMenu()" class="hamburger">
         <span></span><span></span><span></span>
       </button>
     </div>
   </div>
 
+  <!-- Mobile Menu -->
   <div class="mobile-menu" [class.active]="isMenuOpen">
-    <a routerLink="/" class="mobile-nav-link" (click)="toggleMenu()">الرئيسية</a>
-    <a routerLink="/elections" class="mobile-nav-link" (click)="toggleMenu()">الانتخابات</a>
+    <a routerLink="/" class="mobile-nav-link" (click)="toggleMenu()">Home</a>
+    <a routerLink="/elections" class="mobile-nav-link" (click)="toggleMenu()">Elections</a>
     
-    <!-- زر الإعدادات في الموبايل للمسؤولين فقط -->
+    <!-- Settings for admin in mobile -->
     <div *ngIf="isLoggedIn && isAdmin">
-      <a class="mobile-nav-link settings-mobile" (click)="navigateToAdminDashboard(); toggleMenu()"
-         title="لوحة التحكم">
-        ⚙️ الإعدادات
+      <a class="mobile-nav-link settings-mobile" 
+         (click)="navigateToAdminDashboard(); toggleMenu()"
+         title="Admin Dashboard">
+        <i class="fas fa-cog"></i> Admin
       </a>
     </div>
     
+    <!-- Logout for logged-in users -->
     <div *ngIf="isLoggedIn">
       <hr>
-      <button class="logout-btn-mobile" (click)="logout(); toggleMenu()">تسجيل خروج</button>
+      <button class="logout-btn-mobile" (click)="logout(); toggleMenu()">Logout</button>
     </div>
     
+    <!-- Login for logged-out users -->
     <div *ngIf="!isLoggedIn">
       <hr>
-      <button class="login-btn-mobile" (click)="navigateToLogin(); toggleMenu()">تسجيل دخول</button>
+      <button class="login-btn-mobile" (click)="navigateToLogin(); toggleMenu()">Login</button>
     </div>
   </div>
 </nav>

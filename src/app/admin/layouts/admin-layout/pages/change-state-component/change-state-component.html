@@ -1,0 +1,147 @@
+<div class="change-state-page">
+  <!-- Header -->
+  <div class="page-header">
+    <button class="back-button" (click)="goBack()">← Back</button>
+    <h1>Change Election State</h1>
+    <p>Switch between different election phases</p>
+  </div>
+
+  <!-- Current Status -->
+  <div class="current-status" *ngIf="systemInfo">
+    <div class="status-card">
+      <div class="status-icon" [class]="getStateClass(systemInfo.state.state)">
+        {{ getStateIcon(systemInfo.state.state) }}
+      </div>
+      <div class="status-details">
+        <h3>Current Status</h3>
+        <div class="status-name">{{ getStateName(systemInfo.state.state) }}</div>
+        <div class="status-description">{{ getStateDescription(systemInfo.state.state) }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change State Form -->
+  <div class="form-container">
+    <div class="state-options">
+      <div class="state-option" 
+           [class.selected]="newState === 0"
+           (click)="selectState(0)">
+        <div class="option-icon registration">📝</div>
+        <div class="option-content">
+          <h4>Registration Phase</h4>
+          <p>Voters can only register</p>
+          <ul class="option-features">
+            <li>Registration open for voters</li>
+            <li>Voting not available</li>
+            <li>Candidates can be added</li>
+          </ul>
+        </div>
+        <div class="option-check" *ngIf="newState === 0">✓</div>
+      </div>
+
+      <div class="state-option" 
+           [class.selected]="newState === 1"
+           (click)="selectState(1)">
+        <div class="option-icon voting">✅</div>
+        <div class="option-content">
+          <h4>Voting Phase</h4>
+          <p>Voters can cast their votes</p>
+          <ul class="option-features">
+            <li>Voting open for voters</li>
+            <li>Registration closed</li>
+            <li>Candidates can be added</li>
+          </ul>
+        </div>
+        <div class="option-check" *ngIf="newState === 1">✓</div>
+      </div>
+
+      <div class="state-option" 
+           [class.selected]="newState === 2"
+           (click)="selectState(2)">
+        <div class="option-icon ended">⛔</div>
+        <div class="option-content">
+          <h4>Election Ended</h4>
+          <p>Elections closed and voting ended</p>
+          <ul class="option-features">
+            <li>Voting closed</li>
+            <li>Registration closed</li>
+            <li>Results can be viewed</li>
+          </ul>
+        </div>
+        <div class="option-check" *ngIf="newState === 2">✓</div>
+      </div>
+    </div>
+
+    <!-- Warning Message -->
+    <div class="warning-message" *ngIf="newState !== null">
+      <div class="warning-icon">⚠️</div>
+      <div class="warning-content">
+        <h4>Important Warning!</h4>
+        <p>This action will require paying blockchain transaction fees and cannot be undone.</p>
+      </div>
+    </div>
+
+    <!-- Confirmation -->
+    <div class="confirmation-section" *ngIf="newState !== null">
+      <h3>Confirm State Change</h3>
+      <p>Please enter your wallet's private key to confirm the transaction:</p>
+      
+      <div class="private-key-input">
+        <input 
+          type="password" 
+          placeholder="Enter private key (0x...)" 
+          [(ngModel)]="privateKey"
+          class="key-input"
+        />
+        <div class="key-hint">Private key starts with "0x" and is 64 characters long</div>
+      </div>
+
+      <div class="form-actions">
+        <button 
+          class="btn-submit"
+          [class.loading]="isSubmitting"
+          [disabled]="!privateKey.trim() || isSubmitting"
+          (click)="changeState()"
+        >
+          <span *ngIf="isSubmitting">
+            <div class="spinner"></div>
+            Processing...
+          </span>
+          <span *ngIf="!isSubmitting">
+            Confirm State Change
+          </span>
+        </button>
+        
+        <button 
+          class="btn-cancel"
+          (click)="cancel()"
+          [disabled]="isSubmitting"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+
+    <!-- Success Message -->
+    <div class="success-message" *ngIf="successMessage">
+      <div class="success-icon">✅</div>
+      <h3>State Changed Successfully!</h3>
+      <p>{{ successMessage }}</p>
+      <div class="transaction-info" *ngIf="transactionHash">
+        <span class="label">Transaction Hash:</span>
+        <span class="hash">{{ transactionHash | slice:0:20 }}...</span>
+      </div>
+      <div class="success-actions">
+        <button class="btn-primary" (click)="goBack()">Return to Dashboard</button>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div class="error-message" *ngIf="errorMessage">
+      <div class="error-icon">❌</div>
+      <h3>Error</h3>
+      <p>{{ errorMessage }}</p>
+      <button class="btn-primary" (click)="clearError()">Try Again</button>
+    </div>
+  </div>
+</div>

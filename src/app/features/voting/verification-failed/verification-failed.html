@@ -1,0 +1,115 @@
+<!-- verification-failed.html -->
+<div class="failed-container">
+  <div class="failed-card">
+    <!-- Failure Icon -->
+    <div class="failure-icon">
+      <div class="xmark-circle">
+        <div class="xmark-line line1"></div>
+        <div class="xmark-line line2"></div>
+      </div>
+    </div>
+
+    <!-- Failure Message -->
+    <h1 class="failure-title">Verification Failed</h1>
+    <p class="failure-subtitle">We couldn't verify your identity at this time</p>
+
+    <!-- Failure Reason -->
+    <div class="failure-reason">
+      <div class="reason-alert">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p><strong>Reason:</strong> {{ failureReason }}</p>
+      </div>
+    </div>
+
+    <!-- Solutions -->
+    <div class="solutions-section">
+      <h3><i class="fas fa-lightbulb"></i> Suggested Solutions</h3>
+      <div class="solutions-grid">
+        <div class="solution-card" *ngFor="let solution of getCommonSolutions()">
+          <div class="solution-icon">
+            <i class="fas" [class]="solution.icon"></i>
+          </div>
+          <div class="solution-content">
+            <h4>{{ solution.title }}</h4>
+            <p>{{ solution.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button class="btn-primary" (click)="retryVerification()">
+        <i class="fas fa-redo"></i>
+        Try Again
+      </button>
+      
+      <div class="secondary-actions">
+        <button class="btn-secondary" (click)="contactSupport()">
+          <i class="fas fa-headset"></i>
+          Contact Support
+        </button>
+        <button class="btn-secondary" (click)="toggleDetails()">
+          <i class="fas fa-info-circle"></i>
+          {{ showDetails ? 'Hide Details' : 'Show Details' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Failure Details -->
+    <div class="failure-details" *ngIf="showDetails">
+      <h3><i class="fas fa-clipboard-list"></i> Verification Details</h3>
+      <div class="details-grid">
+        <div class="detail-item" *ngFor="let detail of getFailureDetails()">
+          <div class="detail-icon">
+            <i class="fas" [class]="detail.icon"></i>
+          </div>
+          <div class="detail-content">
+            <span class="detail-label">{{ detail.label }}</span>
+            <span class="detail-value" [class]="detail.color">{{ detail.value }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Important Notice -->
+    <div class="important-notice">
+      <div class="notice-header">
+        <i class="fas fa-shield-alt"></i>
+        <h4>Important Notice</h4>
+      </div>
+      <div class="notice-content">
+        <p>For security reasons, you can only attempt verification 3 times within 24 hours.</p>
+        <p>If you continue experiencing issues, please contact our support team for assistance.</p>
+      </div>
+    </div>
+
+    <!-- Redirect Timer -->
+    <div class="redirect-timer">
+      <p>
+        <i class="fas fa-clock"></i>
+        You will be redirected to the start page in <strong>{{ redirectTimer }} seconds</strong>
+      </p>
+      <button class="btn-link" (click)="redirectToStart()">Go to start now</button>
+    </div>
+
+    <!-- Support Information -->
+    <div class="support-info">
+      <h5><i class="fas fa-life-ring"></i> Need Help?</h5>
+      <div class="support-contacts">
+        <div class="contact-item">
+          <i class="fas fa-envelope"></i>
+          <span>Email: support@voting-system.com</span>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-phone"></i>
+          <span>Phone: +1 (800) 123-4567</span>
+        </div>
+        <div class="contact-item">
+          <i class="fas fa-clock"></i>
+          <span>Hours: Mon-Fri 9 AM - 6 PM EST</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

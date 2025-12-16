@@ -6,5 +6,6 @@ export const routes: Routes = [
   ...authRoutes,      // Authentication routes
   ...adminRoutes,     // Admin routes
   ...userRoutes,      // User routes
+  
   { path: '**', component: ErrorPage } // 404 page
 ];

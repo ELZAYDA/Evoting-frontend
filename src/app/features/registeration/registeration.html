@@ -1,0 +1,381 @@
+<div class="registration-container">
+  <!-- Header -->
+  <div class="registration-header">
+    <button class="back-btn" (click)="goToElections()">
+      ← Back to Elections
+    </button>
+    <div class="header-content">
+      <h1>Voter Registration</h1>
+      <p>Register as a voter to participate in the blockchain election</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="registration-content">
+    <!-- System Status -->
+    @if (systemInfo) {
+    <div class="system-status">
+      <div class="status-card" [class]="'status-' + electionState">
+        <div class="status-icon">
+          @if (electionState === 0) {📝}
+          @if (electionState === 1) {🗳️}
+          @if (electionState === 2) {🏆}
+        </div>
+        <div class="status-info">
+          <h3>Current System State: {{ systemInfo.state.stateName }}</h3>
+          <p>{{ getStateDescription(electionState) }}</p>
+          <div class="state-details">
+            <span class="detail">State Code: {{ systemInfo.state.state }}</span>
+            <span class="detail">•</span>
+            <span class="detail">Candidates: {{ systemInfo.contestantsCount }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Registration Process Steps -->
+    <div class="steps-section">
+      <h2>Registration Process</h2>
+      <div class="steps-container">
+        <div class="step" [class.active]="isMetaMaskInstalled">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h4>Install MetaMask</h4>
+            <p>Install MetaMask browser extension</p>
+            @if (!isMetaMaskInstalled) {
+            <button class="btn-install" (click)="showMetaMaskInstallPrompt()">
+              Install MetaMask
+            </button>
+            } @else {
+            <div class="step-completed">✅ Installed</div>
+            }
+          </div>
+        </div>
+
+        <div class="step" [class.active]="isWalletConnected">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h4>Connect Wallet</h4>
+            <p>Connect your MetaMask wallet to the application</p>
+            @if (!isWalletConnected) {
+            <button class="btn-connect" (click)="connectWallet()">
+              Connect MetaMask
+            </button>
+            } @else {
+            <div class="step-completed">✅ Connected</div>
+            }
+          </div>
+        </div>
+
+        <div class="step" [class.active]="registrationSuccess || isVoterRegistered">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h4>Register as Voter</h4>
+            <p>Register your wallet address as a voter</p>
+            @if (canRegister()) {
+            <button class="btn-register" (click)="registerVoter()" [disabled]="isRegistering">
+              @if (isRegistering) {
+              <span class="spinner"></span>
+              Registering...
+              } @else {
+              Register Now
+              }
+            </button>
+            } @else if (registrationSuccess || isVoterRegistered) {
+            <div class="step-completed">✅ Registered</div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wallet Connection Section -->
+    <div class="wallet-section">
+      @if (!isMetaMaskInstalled) {
+      <div class="metamask-not-installed">
+        <div class="metamask-card">
+          <div class="metamask-icon">🦊</div>
+          <h3>MetaMask Required</h3>
+          <p>You need to install MetaMask wallet to proceed with registration.</p>
+          <button class="btn-metamask" (click)="showMetaMaskInstallPrompt()">
+            Install MetaMask
+          </button>
+          <p class="help-text">
+            MetaMask is a cryptocurrency wallet for interacting with the Ethereum blockchain.
+          </p>
+        </div>
+      </div>
+      }
+
+      @if (isMetaMaskInstalled && !isWalletConnected) {
+      <div class="wallet-not-connected">
+        <div class="wallet-card">
+          <div class="wallet-icon">👛</div>
+          <h3>Connect Your Wallet</h3>
+          <p>Click the button below to connect your MetaMask wallet</p>
+          <button class="btn-connect-wallet" (click)="connectWallet()">
+            Connect MetaMask Wallet
+          </button>
+          <p class="wallet-note">
+            You'll be prompted to sign a connection request in MetaMask
+          </p>
+        </div>
+      </div>
+      }
+
+      @if (isWalletConnected && walletAddress) {
+      <div class="wallet-connected">
+        <div class="connected-card">
+          <div class="wallet-header">
+            <div class="wallet-icon connected">✅</div>
+            <div class="wallet-info">
+              <h4>Wallet Connected</h4>
+              <div class="wallet-address-display">
+                <span class="address">{{ formatWalletAddress(walletAddress) }}</span>
+                <button class="btn-copy" (click)="copyWalletAddress()" title="Copy address">
+                  📋
+                </button>
+              </div>
+            </div>
+            <button class="btn-disconnect" (click)="disconnectWallet()">
+              Disconnect
+            </button>
+          </div>
+
+          <!-- Registration Status -->
+          <div class="registration-status">
+            <div class="status-item">
+              <span class="status-label">Registration Status:</span>
+              @if (isCheckingStatus) {
+              <span class="status-value checking">
+                <span class="spinner-small"></span>
+                Checking...
+              </span>
+              } @else if (isVoterRegistered) {
+              <span class="status-value registered">Already Registered ✅</span>
+              } @else {
+              <span class="status-value not-registered">Not Registered</span>
+              }
+            </div>
+            
+            <div class="status-item">
+              <span class="status-label">Voting Status:</span>
+              @if (voterHasVoted) {
+              <span class="status-value voted">Already Voted ✅</span>
+              } @else if (isVoterRegistered) {
+              <span class="status-value can-vote">Can Vote</span>
+              } @else {
+              <span class="status-value cannot-vote">Cannot Vote</span>
+              }
+            </div>
+            
+            <div class="status-item">
+              <span class="status-label">Election State:</span>
+              <span class="status-value state-{{ electionState }}">
+                {{ getStateText(electionState) }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Registration Form -->
+    @if (isWalletConnected && electionState === 0) {
+    <div class="registration-form-section">
+      <div class="form-card">
+        <h3>Voter Registration</h3>
+        
+        <!-- Voter Status Alert -->
+        @if (isVoterRegistered) {
+        <div class="alert alert-info">
+          <div class="alert-icon">ℹ️</div>
+          <div class="alert-content">
+            <h4>Already Registered</h4>
+            <p>You are already registered as a voter. You can vote when voting starts (State 1).</p>
+          </div>
+        </div>
+        } @else {
+        <p class="form-description">
+          By registering, you agree to participate in the blockchain election.
+          Your wallet address will be recorded as an eligible voter.
+        </p>
+        }
+        
+        <!-- Wallet Address Display -->
+        <div class="form-group">
+          <label>Wallet Address:</label>
+          <div class="address-display">
+            <code>{{ walletAddress }}</code>
+            <button class="btn-copy-small" (click)="copyWalletAddress()" title="Copy">
+              📋
+            </button>
+          </div>
+        </div>
+
+        <!-- Voter Status Info -->
+        <div class="form-group">
+          <label>Current Status:</label>
+          <div class="status-display">
+            <div class="status-badge" [class]="getRegistrationStatusClass()">
+              {{ getRegistrationStatusText() }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Network Info -->
+        <div class="form-group">
+          <label>Network:</label>
+          <div class="network-info">
+            <span class="network-name">Ethereum (Localhost)</span>
+            <span class="network-status">Connected</span>
+          </div>
+        </div>
+
+        <!-- Terms Agreement -->
+        @if (!isVoterRegistered) {
+        <div class="form-group terms">
+          <div class="checkbox-container">
+            <input type="checkbox" id="terms" checked disabled>
+            <label for="terms">
+              I understand that:
+              <ul>
+                <li>Registration is only allowed during Registration phase (State 0)</li>
+                <li>I can only register once per wallet address</li>
+                <li>After registration, I can vote during Voting phase (State 1)</li>
+                <li>My registration cannot be revoked</li>
+              </ul>
+            </label>
+          </div>
+        </div>
+        }
+
+        <!-- Registration Button -->
+        <div class="form-actions">
+          @if (!isVoterRegistered) {
+          <button 
+            class="btn-register-main" 
+            (click)="registerVoter()" 
+            [disabled]="isRegistering || isCheckingStatus"
+          >
+            @if (isRegistering) {
+            <span class="spinner"></span>
+            Processing Registration...
+            } @else if (isCheckingStatus) {
+            <span class="spinner"></span>
+            Checking Status...
+            } @else {
+            Complete Registration
+            }
+          </button>
+          }
+          
+          <button class="btn-cancel" (click)="disconnectWallet()">
+            @if (isVoterRegistered) {Disconnect} @else {Cancel}
+          </button>
+          
+          @if (isVoterRegistered) {
+          <button class="btn-view-elections" (click)="goToElections()">
+            View Elections
+          </button>
+          }
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Success Message -->
+    @if (registrationSuccess) {
+    <div class="success-section">
+      <div class="success-card">
+        <div class="success-icon">🎉</div>
+        <div class="success-content">
+          <h3>Registration Successful!</h3>
+          <p>You have been successfully registered as a voter.</p>
+          
+          <div class="success-details">
+            <div class="detail-item">
+              <span class="detail-label">Wallet Address:</span>
+              <span class="detail-value">{{ formatWalletAddress(walletAddress!) }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Registration Time:</span>
+              <span class="detail-value">{{ getCurrentTime() }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Status:</span>
+              <span class="detail-value success">Active Voter</span>
+            </div>
+          </div>
+
+          <div class="next-steps">
+            <h4>Next Steps:</h4>
+            <ul>
+              <li>Wait for Voting phase (State 1) to begin</li>
+              <li>Return to elections page to view candidates</li>
+              <li>Connect your wallet when voting starts</li>
+            </ul>
+          </div>
+
+          <div class="success-actions">
+            <button class="btn-primary" (click)="goToElections()">
+              Go to Elections
+            </button>
+            <button class="btn-outline" (click)="disconnectWallet()">
+              Disconnect Wallet
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Error Message -->
+    @if (registrationError) {
+    <div class="error-section">
+      <div class="error-card">
+        <div class="error-icon">⚠️</div>
+        <div class="error-content">
+          <h3>Registration Error</h3>
+          <p>{{ registrationError }}</p>
+          <button class="btn-retry" (click)="registrationError = ''">
+            Dismiss
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Info Message -->
+    @if (registrationMessage) {
+    <div class="info-section">
+      <div class="info-card">
+        <div class="info-icon">ℹ️</div>
+        <div class="info-content">
+          <p>{{ registrationMessage }}</p>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Footer Help -->
+    <div class="help-section">
+      <div class="help-card">
+        <h4>Need Help?</h4>
+        <div class="help-links">
+          <a href="https://metamask.io/faqs/" target="_blank" class="help-link">
+            MetaMask FAQ
+          </a>
+          <a href="#" class="help-link" (click)="$event.preventDefault(); showMessage('Contact support at: support@election.com')">
+            Contact Support
+          </a>
+          <a href="#" class="help-link" (click)="$event.preventDefault(); goToElections()">
+            View Election Info
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

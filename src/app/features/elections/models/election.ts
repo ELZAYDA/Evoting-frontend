@@ -2,13 +2,23 @@ export interface Election {
   electionId: number;
   electionName: string;
   description: string;
-  startDate: string;   // أو Date لو هتعمل parse
-  endDate: string;     // أو Date
+  startDate: string;
+  endDate: string;
   status: boolean;
-  createdAt: string;   // أو Date
   candidatesCount: number;
+  candidates?: Candidate[];
+  winner?: Candidate;
+  state?: number;
+  stateName?: string;
 }
 
-export interface ElectionResponse {
-  data: Election[];
+export interface Candidate {
+  id: number;
+  name: string;
+  voteCount: number;
+  party: string;
+  age: number;
+  qualification: string;
+  percentage?: number;
+  selected?: boolean;
 }

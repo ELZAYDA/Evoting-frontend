@@ -1,0 +1,109 @@
+<!-- verification-success.html -->
+<div class="success-container">
+  <div class="success-card">
+    <!-- Success Icon -->
+    <div class="success-icon">
+      <div class="checkmark-circle">
+        <div class="checkmark-stem"></div>
+        <div class="checkmark-kick"></div>
+      </div>
+    </div>
+
+    <!-- Celebration -->
+    <div class="celebration">
+      <i class="fas fa-party-horn"></i>
+      <i class="fas fa-sparkles"></i>
+      <i class="fas fa-trophy"></i>
+    </div>
+
+    <!-- Success Text -->
+    <h1 class="success-title">Verification Successful!</h1>
+    <p class="success-subtitle">Your identity has been verified successfully</p>
+
+    <!-- Match Percentage Display -->
+    <div class="match-percentage-display">
+      <div class="percentage-circle">
+        <div class="percentage-value">{{matchPercentage.toFixed(1)}}%</div>
+        <div class="percentage-label">MATCH</div>
+      </div>
+      <div class="match-description">
+        <h3>Excellent Match!</h3>
+        <p>Your face matches the ID card photo with high accuracy.</p>
+      </div>
+    </div>
+
+    
+      <div class="info-item">
+        <div class="info-icon">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <div class="info-content">
+          <div class="info-label">Status</div>
+          <div class="info-value status-verified">
+            <i class="fas fa-check-circle"></i> VERIFIED
+          </div>
+        </div>
+      </div>
+
+    <!-- Next Steps -->
+    <div class="next-steps-card">
+      <div class="next-step-item">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h4>Proceed to Elections</h4>
+          <p>You are now eligible to participate in the upcoming elections.</p>
+        </div>
+      </div>
+
+      <!-- Countdown Box -->
+      <div class="countdown-box">
+        <div class="countdown-header">
+          <i class="fas fa-clock"></i>
+          <h4>Automatic Redirect</h4>
+        </div>
+        <div class="countdown-timer">
+          <div class="timer-display">
+            {{redirectTimer}}
+          </div>
+          <div class="timer-label">seconds</div>
+        </div>
+        <p class="countdown-message">
+          Redirecting to elections page in {{redirectTimer}} second{{redirectTimer !== 1 ? 's' : ''}}...
+        </p>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+      <button class="btn btn-primary btn-go-now" (click)="goToElectionNow()">
+        <i class="fas fa-vote-yea"></i> Go to Elections Now
+      </button>
+
+      
+
+      <button class="btn btn-outline" (click)="redirectToHome()">
+        <i class="fas fa-home"></i> Return to Home
+      </button>
+    </div>
+
+    <!-- Verification Badge -->
+    <div class="verification-badge">
+      <div class="badge-content">
+        <i class="fas fa-shield-check"></i>
+        <div class="badge-text">
+          <h4>Identity Verified</h4>
+          <p>Eligible for Voting</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Note -->
+    <div class="footer-note">
+      <p>
+        <i class="fas fa-info-circle"></i>
+        This verification is valid for the current election cycle.
+        You may need to re-verify for future elections.
+      </p>
+    </div>
+  </div>
+</div>

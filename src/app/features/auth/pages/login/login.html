@@ -1,100 +1,90 @@
-<div class="login-wrapper">
-  <div class="login-container">
-    <!-- Left Side - Image Section -->
-    <div class="image-section">
-      <div class="image-content">
-        <div class="logo">
-          <i class="fas fa-vote-yea"></i>
-          <span>منصة الانتخابات</span>
-        </div>
-        <h1>مرحباً بك مجدداً</h1>
-        <p>قم بتسجيل الدخول للوصول إلى حسابك</p>
-        <div class="features">
-          <div class="feature">
-            <i class="fas fa-shield-alt"></i>
-            <span>نظام آمن ومحمي</span>
-          </div>
-          <div class="feature">
-            <i class="fas fa-bolt"></i>
-            <span>تصويت سريع وسهل</span>
-          </div>
-          <div class="feature">
-            <i class="fas fa-chart-line"></i>
-            <span>نتائج فورية</span>
-          </div>
-        </div>
-      </div>
-    </div>
+<div class="auth-wrapper">
+  <div class="auth-container">
+    
+    
 
-    <!-- Right Side - Form Section -->
+    <!-- Right Side - Login Form -->
     <div class="form-section">
-      <div class="form-header">
-        <h2>تسجيل الدخول</h2>
-        <p>أدخل بياناتك لتسجيل الدخول</p>
-      </div>
+      <div class="form-card">
+        <div class="form-header">
+          <h2>Welcome Back</h2>
+          <p>Sign in to continue to your dashboard</p>
+        </div>
 
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-        <!-- Email or Username -->
-        <div class="form-group">
-          <label for="emailOrUsername">البريد الإلكتروني أو اسم المستخدم</label>
-          <div class="input-container">
-            <i class="fas fa-user input-icon"></i>
-            <input
-              id="emailOrUsername"
-              type="text"
+        <!-- Login Form -->
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+          
+          <div class="input-group">
+            <label for="emailOrUsername" class="input-label">
+              <i class="fas fa-user-circle"></i>
+              Email or Username
+            </label>
+            <input 
+              id="emailOrUsername" 
+              type="text" 
               formControlName="emailOrUsername"
-              placeholder="أدخل بريدك الإلكتروني أو اسم المستخدم"
-              [class.invalid]="loginForm.get('emailOrUsername')?.invalid && loginForm.get('emailOrUsername')?.touched">
+              class="form-input"
+              [class.input-error]="loginForm.get('emailOrUsername')?.invalid && loginForm.get('emailOrUsername')?.touched"
+              placeholder="Enter your email or username">
+            <div class="error-message" *ngIf="loginForm.get('emailOrUsername')?.invalid && loginForm.get('emailOrUsername')?.touched">
+              <i class="fas fa-exclamation-circle"></i>
+              This field is required
+            </div>
           </div>
-          <div class="error-message" *ngIf="loginForm.get('emailOrUsername')?.invalid && loginForm.get('emailOrUsername')?.touched">
-            هذا الحقل مطلوب
-          </div>
-        </div>
 
-        <!-- Password -->
-        <div class="form-group">
-          <label for="password">كلمة المرور</label>
-          <div class="input-container">
-            <i class="fas fa-lock input-icon"></i>
-            <input
-              id="password"
-              type="password"
+          <div class="input-group">
+            <label for="password" class="input-label">
+              <i class="fas fa-lock"></i>
+              Password
+            </label>
+            <input 
+              id="password" 
+              type="password" 
               formControlName="password"
-              placeholder="أدخل كلمة المرور"
-              [class.invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+              class="form-input"
+              [class.input-error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+              placeholder="Enter your password">
+            <div class="error-message" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+              <i class="fas fa-exclamation-circle"></i>
+              Password is required (minimum 6 characters)
+            </div>
           </div>
-          <div class="error-message" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-            كلمة المرور مطلوبة
+
+          <div class="form-options">
+            <a routerLink="/auth/forget-password" class="forgot-password">
+              <i class="fas fa-key"></i>
+              Forgot password?
+            </a>
           </div>
-        </div>
 
-        <!-- Forgot Password -->
-        <div class="forgot-password">
-          <a routerLink="/auth/forget-password" class="forgot-link">
-            <i class="fas fa-key"></i>
-            نسيت كلمة السر؟
-          </a>
-        </div>
+          <button 
+            type="submit" 
+            class="submit-btn"
+            [disabled]="loginForm.invalid || isLoading">
+            <span *ngIf="!isLoading">
+              <i class="fas fa-sign-in-alt"></i>
+              Sign In
+            </span>
+            <span *ngIf="isLoading" class="loading">
+              <i class="fas fa-spinner fa-spin"></i>
+              Signing in...
+            </span>
+          </button>
 
-        <button type="submit" class="submit-button" [disabled]="loginForm.invalid">
-          <span *ngIf="!isLoading">تسجيل الدخول</span>
-          <span *ngIf="isLoading" class="loading">
-            <i class="fas fa-spinner fa-spin"></i>
-            جاري التسجيل...
-          </span>
-        </button>
-      </form>
+        </form>
 
-      <div class="links-section">
-        <div class="register-link">
-          <p>ليس لديك حساب؟ 
-            <a routerLink="/auth/register" class="link">
-              إنشاء حساب جديد
-              <i class="fas fa-arrow-left"></i>
+        <div class="auth-footer">
+          <p>
+            New to VOTE-X? 
+            <a routerLink="/auth/register" class="auth-link">
+              Create an account
+              <i class="fas fa-arrow-right"></i>
             </a>
           </p>
-        </div> 
+        </div>
+
       </div>
     </div>
+
   </div>
 </div>
