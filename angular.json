@@ -35,12 +35,8 @@
               "src/styles.css",            
                 "node_modules/ngx-spinner/animations/ball-scale-multiple.css"
         
-              ],
-            "server": "src/main.server.ts",
-            "outputMode": "server",
-            "ssr": {
-              "entry": "src/server.ts"
-            }
+              ]
+            
           },
           "configurations": {
             "production": {
