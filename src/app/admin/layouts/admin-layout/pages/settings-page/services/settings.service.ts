@@ -18,7 +18,7 @@ import {
   providedIn: 'root'
 })
 export class SettingsService {
-  private baseUrl = 'https://localhost:7185/api/accounts';
+  private baseUrl = 'https://gladis-subdermal-sentiently.ngrok-free.dev/api/accounts';
   private readonly TOKEN_KEY = 'jwtToken';
 
   constructor(private http: HttpClient) {}

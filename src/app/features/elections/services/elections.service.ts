@@ -63,7 +63,7 @@ export interface VoteRequest {
   providedIn: 'root'
 })
 export class ElectionsService {
-  private baseUrl = environment.baseUrl || 'https://localhost:7185/api';
+  private baseUrl = environment.baseUrl;
 
   constructor(private httpClient: HttpClient) { }
 
