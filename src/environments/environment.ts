@@ -1,4 +1,5 @@
 export const environment ={
     production: false,
-    baseUrl : "https://gladis-subdermal-sentiently.ngrok-free.dev/api"
+  // baseUrl: 'https://gladis-subdermal-sentiently.ngrok-free.dev/api'
+  baseUrl: 'https://engage-probe-wave-bench.trycloudflare.com/api'
 }

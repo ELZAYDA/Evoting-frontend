@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export interface ChatRequest {
   question: string;
@@ -16,7 +17,7 @@ export interface ChatResponse {
 })
 export class AiChatService {
   // غير الرابط حسب port الـ API بتاعك
-  private apiUrl = 'https://gladis-subdermal-sentiently.ngrok-free.dev/api/AiChat';
+  private apiUrl = 'environment.baseUrl}/api/AiChat';
 
   constructor(private http: HttpClient) { }
 
