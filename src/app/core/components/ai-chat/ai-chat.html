@@ -1,0 +1,69 @@
+<!-- زر فتح الشات -->
+<div class="chat-button" (click)="toggleChat()">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+  </svg>
+</div>
+
+<!-- نافذة الشات -->
+<div class="chat-window" [class.open]="isOpen">
+  <div class="chat-header">
+    <div class="header-title">
+      <span class="ai-icon">🤖</span>
+      <div>
+        <h3>مساعد</h3>
+        <p>متخصص في نظام التصويت</p>
+      </div>
+    </div>
+    <button class="close-btn" (click)="closeChat()">✕</button>
+  </div>
+
+  <div class="chat-messages" #chatMessages>
+    @for (message of messages; track message.timestamp) {
+      <div class="message" [class.user-message]="message.isUser" [class.ai-message]="!message.isUser">
+        <div class="message-content">
+          @if (!message.isUser) {
+            <div class="avatar">🤖</div>
+          }
+          <div class="text">
+            <p>{{ message.text }}</p>
+            <span class="time">{{ message.timestamp | date:'shortTime' }}</span>
+          </div>
+          @if (message.isUser) {
+            <div class="avatar">👤</div>
+          }
+        </div>
+      </div>
+    }
+    
+    @if (isLoading) {
+      <div class="message ai-message">
+        <div class="message-content">
+          <div class="avatar">🤖</div>
+          <div class="text">
+            <div class="typing-indicator">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="chat-input">
+    <textarea
+      [(ngModel)]="currentQuestion"
+      (keyup.enter)="sendMessage()"
+      placeholder="اكتب سؤالك هنا..."
+      [disabled]="isLoading"
+      rows="1"
+    ></textarea>
+    <button (click)="sendMessage()" [disabled]="!currentQuestion.trim() || isLoading">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+      </svg>
+    </button>
+  </div>
+</div>
