@@ -16,7 +16,7 @@ export interface ChatResponse {
 })
 export class AiChatService {
   // غير الرابط حسب port الـ API بتاعك
-  private apiUrl = 'http://localhost:5284/api/AiChat';
+  private apiUrl = 'https://gladis-subdermal-sentiently.ngrok-free.dev/api/AiChat';
 
   constructor(private http: HttpClient) { }
 

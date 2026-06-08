@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  baseUrl: 'http://localhost:5284/api'
+  baseUrl: 'https://gladis-subdermal-sentiently.ngrok-free.dev/api'
 };
